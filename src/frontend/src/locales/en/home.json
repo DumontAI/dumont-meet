@@ -1,7 +1,7 @@
 {
   "createMeeting": "Create a meeting",
-  "heading": "Simple and Secure Video Conferencing",
-  "intro": "Communicate and work with ease, without compromising your sovereignty",
+  "heading": "Simple, secure video meetings",
+  "intro": "Talk face to face with your team and your clients. Guests join from a link, with no account needed.",
   "joinInputError": "Use a meeting link or code. Examples:",
   "joinInputExample": "URL or 10-letter code",
   "joinInputLabel": "Meeting link",
@@ -46,16 +46,16 @@
       "tooltip": "Fill out the form"
     },
     "slide1": {
-      "title": "Make the switch to simplicity. Try us now!",
-      "body": "Discover an intuitive and accessible solution, designed for all public agents, their partners, and much more."
+      "title": "Start a meeting in two clicks",
+      "body": "Create a room and share the link. Anyone you send it to joins straight from the browser, with nothing to install."
     },
     "slide2": {
-      "title": "Host group calls without limits",
-      "body": "Unlimited time meetings, with smooth and high-quality communication, no matter the group size."
+      "title": "Group calls without a time limit",
+      "body": "Meetings run for as long as you need them to, with no cap on call length and no per-seat licence to count."
     },
     "slide3": {
-      "title": "Transform your meetings with AI",
-      "body": "Get accurate and actionable transcripts to boost your productivity. Feature in beta—try it now!"
+      "title": "Runs on Dumont infrastructure",
+      "body": "Calls are carried by Dumont’s own media server, so meeting audio and video never pass through a third-party provider."
     },
     "carouselLabel": "Introduction slideshow",
     "slidePosition": "Slide {{current}} of {{total}}"

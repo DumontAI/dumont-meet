@@ -1,7 +1,7 @@
 {
   "createMeeting": "Maak een vergadering",
-  "heading": "Eenvoudige en veilige videoconferenties",
-  "intro": "Communiceer en werk gemakkelijk, zonder uw soevereiniteit in gevaar te brengen",
+  "heading": "Eenvoudige en veilige videogesprekken",
+  "intro": "Praat met je team en je klanten. Gasten nemen deel via een link, zonder account.",
   "joinInputError": "Gebruik een vergaderlink of code. Voorbeelden:",
   "joinInputExample": "Een 10-lettercode zoals : abc-defg-hij",
   "joinInputLabel": "Vergadering met link",
@@ -46,16 +46,16 @@
       "tooltip": "Vul het formulier in"
     },
     "slide1": {
-      "title": "Stap over op eenvoud. Probeer ons nu!",
-      "body": "Ontdek een intuïtieve en toegankelijke oplossing, ontworpen voor alle openbare partijen, hun partners en nog veel meer."
+      "title": "Start een vergadering in twee klikken",
+      "body": "Maak een ruimte en deel de link. Gasten nemen rechtstreeks deel via de browser, zonder iets te installeren."
     },
     "slide2": {
-      "title": "Houdt groepsgesprekken zonder limieten",
-      "body": "Vergaderingen van onbeperkte lengte, met soepele en hoogwaardige communicatie, ongeacht de groepsgrootte."
+      "title": "Groepsgesprekken zonder tijdslimiet",
+      "body": "Je vergaderingen duren zo lang als nodig, zonder tijdslimiet en zonder licentie per gebruiker."
     },
     "slide3": {
-      "title": "Transformeer uw vergaderingen met AI",
-      "body": "Krijg nauwkeurige en bruikbare transcripties om uw productiviteit te stimuleren. Deze mogelijkheid is in bèta, probeer het nu!"
+      "title": "Draait op Dumont-infrastructuur",
+      "body": "Gesprekken lopen via de eigen mediaserver van Dumont, dus beeld en geluid gaan niet langs een externe aanbieder."
     },
     "carouselLabel": "Introductie-diavoorstelling",
     "slidePosition": "Dia {{current}} van {{total}}"
