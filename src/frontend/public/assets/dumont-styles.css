@@ -1,0 +1,46 @@
+/* Dumont Meet brand overrides.
+ * Loaded at runtime via FRONTEND_CUSTOM_CSS_URL=/assets/dumont-styles.css
+ * Brand: Navy #17355a, Teal #41b8b0, White #ffffff.
+ * Meet has no separate light/dark themes: it is light outside a meeting and
+ * dark inside a room, so the navy scale drives light and teal drives dark.
+ */
+
+:root {
+  /* --- navy scale, derived from the brand navy at 700 --- */
+  --colors-primary-50: #f2f5f9;
+  --colors-primary-100: #e3eaf2;
+  --colors-primary-200: #c7d5e5;
+  --colors-primary-300: #9ab3ce;
+  --colors-primary-400: #5d80ab;
+  --colors-primary-500: #2f5c8f;
+  --colors-primary-600: #1f4571;
+  --colors-primary-700: #17355a;
+  --colors-primary-800: #122a48;
+  --colors-primary-900: #0e2039;
+  --colors-primary-950: #09162a;
+  --colors-primary-action: #17355a;
+
+  /* Semantic primary resolves through the blue scale in panda.config.ts,
+   * so the same shades have to be restated here or buttons stay DSFR blue. */
+  --colors-blue-100: #e3eaf2;
+  --colors-blue-300: #9ab3ce;
+  --colors-blue-500: #2f5c8f;
+  --colors-blue-700: #17355a;
+  --colors-blue-800: #122a48;
+  --colors-blue-900: #0e2039;
+
+  /* --- teal, used for in-room dark mode and accents --- */
+  --colors-primary-dark-50: #06201f;
+  --colors-primary-dark-75: #0a2d2b;
+  --colors-primary-dark-100: #0e3a37;
+  --colors-primary-dark-200: #155753;
+  --colors-primary-dark-300: #1d7570;
+  --colors-primary-dark-400: #2d968f;
+  --colors-primary-dark-500: #41b8b0;
+  --colors-primary-dark-600: #5fc7c0;
+  --colors-primary-dark-700: #83d5cf;
+  --colors-primary-dark-800: #a8e2de;
+  --colors-primary-dark-900: #cdf0ed;
+  --colors-primary-dark-950: #edfbfa;
+  --colors-primary-dark-action: #41b8b0;
+}
