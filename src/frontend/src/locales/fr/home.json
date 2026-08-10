@@ -1,7 +1,7 @@
 {
   "createMeeting": "Créer une réunion",
-  "heading": "Visioconférences simples et sécurisées",
-  "intro": "Communiquez et travaillez en toute simplicité, sans compromis sur votre souveraineté",
+  "heading": "Des visioconférences simples et sécurisées",
+  "intro": "Échangez avec vos équipes et vos clients. Vos invités rejoignent la réunion depuis un lien, sans créer de compte.",
   "joinInputError": "Saisissez un lien ou un code de réunion. Exemples :",
   "joinInputExample": "Un code de réunion ressemble à ceci : abc-defg-hij",
   "joinInputLabel": "Lien complet ou code de la réunion",
@@ -48,16 +48,16 @@
       "tooltip": "Accéder au formulaire"
     },
     "slide1": {
-      "title": "Passez à la simplicité. Essayez-nous dès maintenant !",
-      "body": "Découvrez une solution intuitive et accessible, conçue pour tous les agents publics et leurs partenaires, et bien plus encore."
+      "title": "Lancez une réunion en deux clics",
+      "body": "Créez une salle et partagez le lien. Vos invités rejoignent directement depuis le navigateur, sans rien installer."
     },
     "slide2": {
-      "title": "Organisez des appels de groupe sans limite",
-      "body": "Réunions sans limite de temps, avec une communication fluide et de haute qualité, quel que soit le nombre."
+      "title": "Des appels de groupe sans limite de durée",
+      "body": "Vos réunions durent aussi longtemps que nécessaire, sans limite de durée ni licence par utilisateur."
     },
     "slide3": {
-      "title": "Transformez vos réunions avec l'IA",
-      "body": "Obtenez des transcriptions précises et actionnables, pour booster votre productivité. Fonctionnalité en beta, essayez-la maintenant !"
+      "title": "Hébergé sur l'infrastructure Dumont",
+      "body": "Les appels transitent par le serveur média de Dumont : ni l'audio ni la vidéo ne passent par un prestataire tiers."
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "createMeeting": "Meeting erstellen",
   "heading": "Einfache und sichere Videokonferenzen",
-  "intro": "Kommuniziere und arbeite mühelos, ohne deine digitale Souveränität zu gefährden",
+  "intro": "Sprechen Sie mit Ihrem Team und Ihren Kunden. Gäste treten über einen Link bei, ganz ohne Konto.",
   "joinInputError": "Verwende einen Meeting-Link oder -Code. Beispiele:",
   "joinInputExample": "URL oder 10-stelliger Code",
   "joinInputLabel": "Meeting-Link",
@@ -46,16 +46,16 @@
       "tooltip": "Formular ausfüllen"
     },
     "slide1": {
-      "title": "Mach Schluss mit kompliziert – probier uns jetzt aus!",
-      "body": "Entdecke eine intuitive und leicht zugängliche Lösung, entwickelt für alle Mitarbeitenden im öffentlichen Dienst, ihre Partner und viele weitere."
+      "title": "Ein Meeting in zwei Klicks starten",
+      "body": "Raum erstellen, Link teilen. Ihre Gäste treten direkt im Browser bei, ohne etwas zu installieren."
     },
     "slide2": {
-      "title": "Gruppenmeetings ohne Einschränkungen",
-      "body": "Unbegrenzte Meeting-Dauer mit flüssiger Kommunikation in hoher Qualität – unabhängig von der Gruppengröße."
+      "title": "Gruppenanrufe ohne Zeitlimit",
+      "body": "Ihre Meetings dauern so lange wie nötig, ohne Zeitbegrenzung und ohne Lizenz pro Nutzer."
     },
     "slide3": {
-      "title": "Verwandele deine Meetings mit KI",
-      "body": "Erhalte präzise und verwertbare Transkripte zur Steigerung deiner Produktivität. Beta-Funktion – jetzt testen!"
+      "title": "Läuft auf Dumont-Infrastruktur",
+      "body": "Die Anrufe laufen über den eigenen Medienserver von Dumont, sodass Ton und Bild keinen Drittanbieter passieren."
     },
     "carouselLabel": "Einführungs-Diashow",
     "slidePosition": "Folie {{current}} von {{total}}"
