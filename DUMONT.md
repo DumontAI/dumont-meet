@@ -7,12 +7,13 @@ Dumont's deployment of [LaSuite Meet](https://github.com/suitenumerique/meet) (D
 
 ## What the `dumont` branch changes
 
-Branding assets, plus the document head. No React component is patched:
+Branding assets, the document head, and exactly one React component:
 
 - `src/frontend/public/` favicons, apple-touch-icon, android-chrome icons, `favicon.ico`, `icon.png` — generated from `dumont_green_icon.png`
 - `src/frontend/public/assets/logo.svg` — the Dumont lockup, embedded, replaces the La Suite logo in the header
 - `src/frontend/public/assets/dumont-styles.css` — brand palette, loaded at runtime via `FRONTEND_CUSTOM_CSS_URL`
 - `src/frontend/index.html` — Open Graph and Twitter card tags, so a pasted room link unfurls with the Dumont icon instead of a bare URL
+- `src/frontend/src/features/rooms/livekit/components/ScreenShareErrorModal.tsx` — drops the "for more information" link to `lasuite.crisp.help`, DINUM's French Crisp desk. The last user-visible La Suite URL. The System Preferences deep link that survives it is the actual fix, so nothing useful was lost and no Dumont help page had to be invented. The now-unused `helpLinkText`/`helpLinkLabel` locale strings are deliberately left in all four locales: inert, and cheaper than a four-file diff to conflict on at every rebase
 - `src/frontend/site.webmanifest` — `name`/`short_name`. `vite.config.ts` injects the title into the copy it emits at `/site.webmanifest`, but the `<link rel="manifest">` in `index.html` makes Vite emit a *second*, untransformed copy at `/assets/site-<hash>.webmanifest`, and that hashed one is what the browser actually loads. Without a name in the source file an installed PWA has no name.
 
 The app title comes from the stock build arg, not a patch:
