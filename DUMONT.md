@@ -40,3 +40,49 @@ nothing to fork.
 
 `/opt/meet` on airbase-hel1. See the `dumont-meet-deployment` note for the
 LiveKit sharing constraints.
+
+## Recording (COR-5)
+
+Enabled 2026-08-17. Nothing here is in this repo: the whole thing is compose,
+env and nginx under `/opt/meet`. Written down because three details are not
+guessable.
+
+**One storage endpoint, three network namespaces.** Recording needs MinIO
+reachable from the Django backend and the nginx frontend (both on the `meet`
+bridge) *and* from `livekit-egress` (host network). MinIO therefore runs in
+host mode bound to `172.17.0.1:9100`, the docker0 address, which is the only
+address all three can name. A published port does not work: `DOCKER-USER` on
+this host drops all forwarded traffic except 8443, so bridge to DNAT'd port is
+dead. The bridge subnet is pinned to `192.168.192.0/20` in `compose.yaml` and a
+ufw rule allows that subnet to `172.17.0.1:9100`; without the pin, Docker could
+hand back a different subnet and the firewall rule would silently stop matching.
+
+**Moveezi is not affected.** Meet builds its own `S3Upload` from
+`AWS_S3_*` and passes it on every egress request
+(`core/recording/worker/factories.py`), so the shared `livekit-egress` keeps its
+own R2 config and never had to be restarted. Do not "consolidate" the two.
+
+**Cloudflare will leak recordings if you let it.** Downloads go through
+`/media/recordings/`, where nginx asks Django for SigV4 headers via
+`auth_request` and proxies to MinIO. Cloudflare caches `.mp4` by extension: the
+first authorised download populated the edge and subsequent *anonymous*
+requests to the same URL got a `HIT` without the origin's 401 ever being
+consulted. The location sends `Cache-Control: private, no-store, max-age=0`.
+Confirm `cf-cache-status: BYPASS` on any change to that block.
+
+Finalization is a MinIO bucket notification to
+`/api/v1.0/recordings/storage-hook/`, authenticated with a bearer token. Django
+`SECURE_SSL_REDIRECT` 301s anything not claiming https and MinIO cannot add
+headers, so that one location injects `X-Forwarded-Proto: https`. Celery is
+*not* needed: `core/tasks/_task.py` runs tasks inline when it is absent.
+
+Smoke test: an egress with no published tracks aborts with "Start signal not
+received". Joining a room with camera and mic off is not enough. Publish a real
+track first:
+
+```bash
+docker run -d --rm --network host --name lk-publisher \
+  -e LIVEKIT_URL=ws://127.0.0.1:7880 -e LIVEKIT_API_KEY=meet \
+  -e LIVEKIT_API_SECRET=<from /opt/meet/env.d/secrets> \
+  livekit/livekit-cli:latest room join --identity smoke --publish-demo <room-uuid>
+```
