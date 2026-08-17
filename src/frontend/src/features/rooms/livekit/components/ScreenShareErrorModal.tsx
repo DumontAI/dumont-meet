@@ -48,16 +48,15 @@ export const ScreenShareErrorModal = ({
                   .{' '}
                 </>
               )}
-              {t('helpLinkText')}{' '}
-              <A
-                href="https://lasuite.crisp.help/fr/article/visio-probleme-de-presentation-1xkf799/"
-                aria-label={t('helpLinkLabel') + '-' + t('newTab')}
-                target="_blank"
-                color="primary"
-              >
-                {t('helpLinkLabel')}
-              </A>
-              .
+              {/* Upstream follows the macOS instructions with "for more
+                  information, see ..." pointing at lasuite.crisp.help, DINUM's
+                  French-language Crisp desk. That was the last user-visible La
+                  Suite URL in the app and there is no Dumont equivalent to
+                  swap in. Dropped rather than replaced: the System Preferences
+                  deep link above is the actual fix, so the sentence was only
+                  sending people somewhere worse. The helpLinkText and
+                  helpLinkLabel locale strings are left in place -- inert, and
+                  cheaper than a four-locale diff at every upstream rebase. */}
             </P>
             <Button
               onPress={close}
