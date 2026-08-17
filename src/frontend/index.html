@@ -8,6 +8,17 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>%VITE_APP_TITLE%</title>
+    <!-- Link unfurls (Dumont Chat, Slack, WhatsApp, LinkedIn) render nothing
+         without these. The host is hardcoded because this fork only ever
+         builds meet.getdumont.ai; og:image must be an absolute URL. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="%VITE_APP_TITLE%" />
+    <meta property="og:title" content="%VITE_APP_TITLE%" />
+    <meta property="og:description" content="Simple, secure video meetings. Guests join from a link, with no account needed." />
+    <meta property="og:url" content="https://meet.getdumont.ai/" />
+    <meta property="og:image" content="https://meet.getdumont.ai/android-chrome-512x512.png" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="description" content="Simple, secure video meetings. Guests join from a link, with no account needed." />
   </head>
   <body>
     <div id="root"></div>
