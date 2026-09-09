@@ -18,7 +18,17 @@ import { LoginButton } from '@/components/LoginButton'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { captureEvent } from '@/features/analytics/telemetry'
 
-const Columns = ({ children }: { children?: ReactNode }) => {
+// The marketing layout lets both columns spread across the whole viewport,
+// which suits a full-bleed illustration. The signed-in panel is a bounded card,
+// so the same rule leaves a void between the two columns on a wide screen.
+// `signedIn` caps the row and pulls the columns back together.
+const Columns = ({
+  children,
+  signedIn = false,
+}: {
+  children?: ReactNode
+  signedIn?: boolean
+}) => {
   return (
     <div
       className={css({
@@ -45,13 +55,24 @@ const Columns = ({ children }: { children?: ReactNode }) => {
           padding: 0,
         },
       })}
+      style={
+        signedIn
+          ? { maxWidth: '78rem', width: '100%', alignItems: 'center' }
+          : undefined
+      }
     >
       {children}
     </div>
   )
 }
 
-const LeftColumn = ({ children }: { children?: ReactNode }) => {
+const LeftColumn = ({
+  children,
+  signedIn = false,
+}: {
+  children?: ReactNode
+  signedIn?: boolean
+}) => {
   return (
     <div
       className={css({
@@ -75,13 +96,20 @@ const LeftColumn = ({ children }: { children?: ReactNode }) => {
           padding: '1em 3em',
         },
       })}
+      style={signedIn ? { flexBasis: '34rem', maxWidth: '34rem' } : undefined}
     >
       {children}
     </div>
   )
 }
 
-const RightColumn = ({ children }: { children?: ReactNode }) => {
+const RightColumn = ({
+  children,
+  signedIn = false,
+}: {
+  children?: ReactNode
+  signedIn?: boolean
+}) => {
   return (
     <div
       className={css({
@@ -100,6 +128,11 @@ const RightColumn = ({ children }: { children?: ReactNode }) => {
           padding: '1em 3em',
         },
       })}
+      style={
+        signedIn
+          ? { flexBasis: '34rem', maxWidth: '34rem', marginBottom: 0 }
+          : undefined
+      }
     >
       {children}
     </div>
@@ -196,8 +229,8 @@ const Home = () => {
   return (
     <UserAware>
       <Screen>
-        <Columns>
-          <LeftColumn>
+        <Columns signedIn={!!isLoggedIn}>
+          <LeftColumn signedIn={!!isLoggedIn}>
             <Heading>{isLoggedIn ? greeting : t('heading')}</Heading>
             <IntroText>
               {isLoggedIn ? t('signedInIntro') : t('intro')}
@@ -233,7 +266,7 @@ const Home = () => {
             <Separator />
             <MoreLink />
           </LeftColumn>
-          <RightColumn>
+          <RightColumn signedIn={!!isLoggedIn}>
             {isLoggedIn ? <HomePanel /> : <IntroSlider />}
           </RightColumn>
         </Columns>
