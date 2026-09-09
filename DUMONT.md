@@ -87,3 +87,52 @@ docker run -d --rm --network host --name lk-publisher \
   -e LIVEKIT_API_SECRET=<from /opt/meet/env.d/secrets> \
   livekit/livekit-cli:latest room join --identity smoke --publish-demo <room-uuid>
 ```
+
+## Live captions
+
+The transcriber agent (`src/agents/multi_user_transcriber.py`) is a separate
+LiveKit worker: one process, one job per room, one `AgentSession` per
+participant. It is not part of the backend or frontend images.
+
+Its container needs `LIVEKIT_URL` / `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET`
+(same credentials as egress, LiveKit is shared with two other products),
+`TRANSCRIBER_AGENT_NAME`, `STT_PROVIDER=groq` and `GROQ_API_KEY`. The backend
+needs `ROOM_SUBTITLE_ENABLED=True` and `ROOM_SUBTITLE_AGENT_NAME`.
+
+**The two agent names are one string in two places.** Dispatch is explicit:
+`core/services/subtitle.py` calls `create_dispatch(agent_name=ROOM_SUBTITLE_AGENT_NAME)`
+and the worker only receives jobs for the name it registered as. Both default to
+`multi-user-transcriber`, so set neither or set both. A mismatch is silent: the
+API returns 200, the dispatch is created, no worker ever claims it, and the
+caption button in the UI does nothing forever.
+
+**Groq, because the alternatives do not exist on this host.** `deepgram` needs a
+Deepgram key that Dumont does not have. `kyutai` and `voxtral-vllm` both need a
+GPU, and hel1 has integrated AMD graphics. Groq serves
+`whisper-large-v3-turbo` on an OpenAI-compatible `/audio/transcriptions` route
+with a key already in the vault (`hel1: enzo`, `GROQ_API_KEY`). Overridable with
+`GROQ_STT_MODEL` and `GROQ_STT_LANGUAGE`; the language is a single ISO-639-1
+code, Deepgram's `multi` is not a thing Whisper accepts.
+
+`livekit-plugins-openai` 1.6.7 has no `with_groq` helper (only `with_azure` and
+`with_ovhcloud`), so the branch points `openai.STT` at
+`https://api.groq.com/openai/v1` and passes `api_key` explicitly. Without the
+explicit key the plugin falls back to `OPENAI_API_KEY` and quietly talks to the
+wrong provider. Adding that plugin also pinned `websockets` down from 17.1 to
+15.0.1: `openai[realtime]` caps it below 16. `voxtral_vllm_stt.py` is the only
+websockets user here and only touches the new asyncio client, which is unchanged
+since 14.0.
+
+**Captions arrive per utterance, not per word.** Groq's endpoint transcribes
+discrete audio segments, so the plugin advertises `streaming=False` and
+`Agent.default.stt_node` wraps it in a VAD-driven `stt.StreamAdapter`. Silero
+buffers the whole utterance, waits out 0.55s of silence, then makes one HTTP
+round trip: roughly a second of lag after the speaker stops, and no interim
+results at all. Deepgram would stream partials in a few hundred ms. That is the
+price of not having a key or a GPU, and it is fine for a caption track nobody
+reads while they are talking.
+
+The VAD is loaded once per worker process in `prewarm()` and reused by every
+session, so a joining participant costs no model load. `ENABLE_SILERO_VAD=false`
+is therefore not compatible with `STT_PROVIDER=groq`: with no session VAD the
+stream adapter cannot be built and `stt_node` raises on the first frame.
