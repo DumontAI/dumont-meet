@@ -20,9 +20,20 @@ The app title comes from the stock build arg, not a patch:
 
 ```bash
 docker build -f src/frontend/Dockerfile --target frontend-production \
-  --build-arg VITE_APP_TITLE="Dumont Meet" --build-arg DOCKER_USER=1000 \
+  --build-arg VITE_APP_TITLE="Dumont Meet" --build-arg VITE_APP_WORDMARK="Meet" \
+  --build-arg DOCKER_USER=1000 \
   -t dumont/meet-frontend:<upstream-tag> .
 ```
+
+`VITE_APP_WORDMARK` draws the product name next to the logo mark, the way
+"Google Meet" is set. The logo asset is the Dumont mark on its own, so without
+it the header reads just "Dumont" and nothing names the product. When it is set
+the `<img>` alt goes empty and the link carries `VITE_APP_TITLE` as its
+accessible name, so a screen reader reads the lockup once.
+
+A push that carries a rebase onto a new upstream tag will be **rejected over
+HTTPS** for lacking `workflow` scope, because upstream's own
+`.github/workflows` edits ride along. Push over SSH instead.
 
 Keeping the diff to assets means rebasing onto a new upstream tag is a fast-forward
 in practice. Do not start patching components: use the CSS file and the build arg.
@@ -71,11 +82,41 @@ requests to the same URL got a `HIT` without the origin's 401 ever being
 consulted. The location sends `Cache-Control: private, no-store, max-age=0`.
 Confirm `cf-cache-status: BYPASS` on any change to that block.
 
-Finalization is a MinIO bucket notification to
-`/api/v1.0/recordings/storage-hook/`, authenticated with a bearer token. Django
-`SECURE_SSL_REDIRECT` 301s anything not claiming https and MinIO cannot add
-headers, so that one location injects `X-Forwarded-Proto: https`. Celery is
-*not* needed: `core/tasks/_task.py` runs tasks inline when it is absent.
+Finalization changed at v1.31.0. Upstream removed the S3 storage-event webhook
+in v1.30 and now finalizes **only** on the LiveKit `egress_ended` webhook, so
+the MinIO bucket notification is gone and LiveKit posts to
+`/api/v1.0/rooms/webhooks-livekit/` instead. Django `SECURE_SSL_REDIRECT` 301s
+anything not claiming https and LiveKit cannot add headers beyond its signed
+token, so that one nginx location injects `X-Forwarded-Proto: https`, exactly as
+the MinIO hook used to need. Celery is *not* needed: `core/tasks/_task.py` runs
+tasks inline when it is absent.
+
+**Meet uses Moveezi's LiveKit key pair, on purpose.** LiveKit signs every
+webhook with a single key and each receiver verifies the JWT `iss` against its
+own configured key, so two products cannot verify one signature with different
+keys. hel1's LiveKit was already signing with Moveezi's `API7M3rRv8MiSxc` for
+DU-442, and that hook is production, so Meet moved to the shared pair rather
+than the reverse. `LIVEKIT_WEBHOOK_EVENTS_FILTER_REGEX` keeps Meet from acting
+on Moveezi's rooms: Meet names LiveKit rooms after the room UUID, Moveezi names
+its `survey-<taskId>`. Rotating that Moveezi credential breaks Meet recording.
+
+**`RECORDING_DOWNLOAD_BASE_URL` has no default and is not optional.** Unset, the
+"your recording is ready" email ships a link of literally `None/<uuid>`, which
+is how recording looked broken for a month while the mp4s sat in MinIO. It must
+be `https://meet.dumont.cloud/recording`; the frontend route is
+`/recording/<uuid>`.
+
+**A finished recording does not stop at `saved`.** It advances to
+`notification_succeeded` once the owner has been emailed, so anything filtering
+on `saved` alone lists nothing. A `HEAD` on `/media/recordings/<id>.mp4` returns
+403 even for the owner because Django signs the SigV4 headers for GET; that is
+not a fault, `GET` returns 200/206.
+
+The stock `transcript` recording mode is hidden here. It is an audio-only egress
+whose output is POSTed to `SUMMARY_SERVICE_ENDPOINT`, a LaSuite Docs stack
+Dumont does not run, so choosing it recorded audio and delivered nothing.
+`RECORDING_WORKER_CLASSES` is pinned to `screen_recording` alone. Live captions
+below are the transcript feature on this deployment.
 
 Smoke test: an egress with no published tracks aborts with "Start signal not
 received". Joining a room with camera and mic off is not enough. Publish a real
