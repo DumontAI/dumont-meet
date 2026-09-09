@@ -96,7 +96,14 @@ const LeftColumn = ({
           padding: '1em 3em',
         },
       })}
-      style={signedIn ? { flexBasis: '34rem', maxWidth: '34rem' } : undefined}
+      // marginTop:auto pushes the column to the bottom of the full-height
+      // stack, which centres a single marketing block but on a narrow screen
+      // strands the panel far below the buttons.
+      style={
+        signedIn
+          ? { flexBasis: '34rem', maxWidth: '34rem', marginTop: 0 }
+          : undefined
+      }
     >
       {children}
     </div>
