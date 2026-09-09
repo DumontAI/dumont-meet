@@ -16,16 +16,44 @@ import { useLoginHint } from '@/hooks/useLoginHint'
 import { logout } from '@/features/auth/utils/logout'
 import { useMemo } from 'react'
 
+// When set, the logo asset carries the organisation mark only and this is
+// rendered next to it as the product name, the way "Google Meet" is drawn.
+// The lockup is then labelled once, on the link, so a screen reader reads the
+// full title rather than the mark and the wordmark as two separate strings.
+const wordmark = import.meta.env.VITE_APP_WORDMARK as string | undefined
+
 const Logo = () => (
   <img
     src="/assets/logo.svg"
-    alt={`${import.meta.env.VITE_APP_TITLE}`}
+    alt={wordmark ? '' : `${import.meta.env.VITE_APP_TITLE}`}
     className={`Header-logo ${css({
       maxHeight: { base: '30px', sm: '40px' },
       marginTop: { base: '10px', sm: '5px' },
     })}`}
   />
 )
+
+const Wordmark = () => {
+  if (!wordmark) return null
+  return (
+    <span
+      aria-hidden="true"
+      className={`Header-wordmark ${css({
+        color: 'greyscale.700',
+        fontSize: { base: '1.25rem', sm: '1.6rem' },
+        lineHeight: '1',
+        fontWeight: '400',
+        letterSpacing: '-0.01em',
+        whiteSpace: 'nowrap',
+        marginLeft: { base: '0.4rem', sm: '0.55rem' },
+        marginTop: { base: '10px', sm: '5px' },
+        alignSelf: 'center',
+      })}`}
+    >
+      {wordmark}
+    </span>
+  )
+}
 
 const LoginHint = () => {
   const { t } = useTranslation()
@@ -129,6 +157,9 @@ export const Header = () => {
                     borderRadius: '4px',
                   },
                 })}
+                aria-label={
+                  wordmark ? `${import.meta.env.VITE_APP_TITLE}` : undefined
+                }
                 onClick={(event) => {
                   if (
                     isRoom &&
@@ -145,8 +176,9 @@ export const Header = () => {
                     display: 'none',
                   })}`}
                 />
-                <HStack gap={0}>
+                <HStack gap={0} alignItems="center">
                   <Logo />
+                  <Wordmark />
                 </HStack>
               </Link>
             </Stack>
