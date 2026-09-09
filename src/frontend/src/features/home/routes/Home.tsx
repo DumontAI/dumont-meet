@@ -31,35 +31,33 @@ const Columns = ({
 }) => {
   return (
     <div
-      className={css({
-        alignItems: 'center',
-        margin: 'auto',
-        display: 'inline-flex',
-        flexDirection: 'column',
-        height: '100%',
-        minHeight: '100%',
-        justifyContent: 'normal',
-        padding: '0 1rem',
-        width: 'calc(100% - 2rem)',
-        _motionReduce: {
-          opacity: 1,
+      className={css(
+        {
+          alignItems: 'center',
+          margin: 'auto',
+          display: 'inline-flex',
+          flexDirection: 'column',
+          height: '100%',
+          minHeight: '100%',
+          justifyContent: 'normal',
+          padding: '0 1rem',
+          width: 'calc(100% - 2rem)',
+          _motionReduce: {
+            opacity: 1,
+          },
+          _motionSafe: {
+            opacity: 0,
+            animation: '.5s ease-in fade 0s forwards',
+          },
+          lg: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            width: '100%',
+            padding: 0,
+          },
         },
-        _motionSafe: {
-          opacity: 0,
-          animation: '.5s ease-in fade 0s forwards',
-        },
-        lg: {
-          flexDirection: 'row',
-          justifyContent: 'center',
-          width: '100%',
-          padding: 0,
-        },
-      })}
-      style={
-        signedIn
-          ? { maxWidth: '78rem', width: '100%', alignItems: 'center' }
-          : undefined
-      }
+        signedIn && { lg: { maxWidth: '78rem' } }
+      )}
     >
       {children}
     </div>
@@ -75,35 +73,38 @@ const LeftColumn = ({
 }) => {
   return (
     <div
-      className={css({
-        alignItems: 'center',
-        textAlign: 'center',
-        display: 'inline-flex',
-        flexDirection: 'column',
-        flexBasis: 'auto',
-        flexShrink: 0,
-        maxWidth: '38rem',
-        width: '100%',
-        padding: '1rem 3%',
-        marginTop: 'auto',
-        lg: {
-          margin: 0,
-          textAlign: 'left',
-          alignItems: 'flex-start',
-          flexShrink: '1',
-          flexBasis: '40rem',
-          maxWidth: '40rem',
-          padding: '1em 3em',
+      className={css(
+        {
+          alignItems: 'center',
+          textAlign: 'center',
+          display: 'inline-flex',
+          flexDirection: 'column',
+          flexBasis: 'auto',
+          flexShrink: 0,
+          maxWidth: '38rem',
+          width: '100%',
+          padding: '1rem 3%',
+          marginTop: 'auto',
+          lg: {
+            margin: 0,
+            textAlign: 'left',
+            alignItems: 'flex-start',
+            flexShrink: '1',
+            flexBasis: '40rem',
+            maxWidth: '40rem',
+            padding: '1em 3em',
+          },
+          // Below lg the row becomes a column, where flexBasis sets a HEIGHT floor
+          // rather than a width, so the narrowing has to stay inside the lg block.
+          // marginTop:auto pushes this column to the bottom of the full-height
+          // stack, which centres a lone marketing block but with a panel stacked
+          // underneath it strands the panel far below the buttons.
         },
-      })}
-      // marginTop:auto pushes the column to the bottom of the full-height
-      // stack, which centres a single marketing block but on a narrow screen
-      // strands the panel far below the buttons.
-      style={
-        signedIn
-          ? { flexBasis: '34rem', maxWidth: '34rem', marginTop: 0 }
-          : undefined
-      }
+        signedIn && {
+          marginTop: 0,
+          lg: { flexBasis: '34rem', maxWidth: '34rem' },
+        }
+      )}
     >
       {children}
     </div>
@@ -119,27 +120,28 @@ const RightColumn = ({
 }) => {
   return (
     <div
-      className={css({
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        overflow: 'hidden',
-        padding: '1rem 3%',
-        marginBottom: 'auto',
-        flexBasis: 'auto',
-        flexShrink: 0,
-        maxWidth: '39rem',
-        lg: {
-          margin: 0,
-          flexBasis: '45%',
-          padding: '1em 3em',
+      className={css(
+        {
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          overflow: 'hidden',
+          padding: '1rem 3%',
+          marginBottom: 'auto',
+          flexBasis: 'auto',
+          flexShrink: 0,
+          maxWidth: '39rem',
+          lg: {
+            margin: 0,
+            flexBasis: '45%',
+            padding: '1em 3em',
+          },
         },
-      })}
-      style={
-        signedIn
-          ? { flexBasis: '34rem', maxWidth: '34rem', marginBottom: 0 }
-          : undefined
-      }
+        signedIn && {
+          marginBottom: 0,
+          lg: { flexBasis: '34rem', maxWidth: '34rem' },
+        }
+      )}
     >
       {children}
     </div>
