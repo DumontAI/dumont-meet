@@ -185,24 +185,9 @@ const IntroText = styled('div', {
   },
 })
 
-const getGreetingPeriod = () => {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'morning'
-  if (hour < 18) return 'afternoon'
-  return 'evening'
-}
-
 const Home = () => {
   const { t } = useTranslation('home')
-  const { isLoggedIn, user } = useUser()
-
-  // `full_name` is often empty on this deployment, so the nameless greeting is
-  // the common path, not an edge case.
-  const firstName = user?.full_name?.trim().split(/\s+/)[0]
-  const greeting = t(
-    `greeting.${getGreetingPeriod()}${firstName ? 'Named' : ''}`,
-    { name: firstName }
-  )
+  const { isLoggedIn } = useUser()
 
   const [redirectFailed, setRedirectFailed] = useState(false)
   const { data } = useConfig()
@@ -240,7 +225,9 @@ const Home = () => {
       <Screen>
         <Columns signedIn={!!isLoggedIn}>
           <LeftColumn signedIn={!!isLoggedIn}>
-            <Heading>{isLoggedIn ? greeting : t('heading')}</Heading>
+            <Heading>
+              {isLoggedIn ? t('signedInHeading') : t('heading')}
+            </Heading>
             <IntroText>
               {isLoggedIn ? t('signedInIntro') : t('intro')}
             </IntroText>

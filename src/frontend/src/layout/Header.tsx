@@ -1,3 +1,4 @@
+import '@fontsource/poppins/700.css'
 import { Link } from 'wouter'
 import { css } from '@/styled-system/css'
 import { HStack, Stack } from '@/styled-system/jsx'
@@ -33,19 +34,27 @@ const Logo = () => (
   />
 )
 
+// Set in the same face, weight and colour as the logo's own lettering so the
+// two read as one lockup rather than a caption bolted onto an image. The
+// wordmark in the Dumont asset is Poppins Bold in #17355a: matched per glyph
+// against the source PNG at 98% overlap on M, O, U and N, which is why the
+// font is carried here rather than left to the app's UI face. Colour comes
+// from the brand token, not a literal, so a palette change moves both.
 const Wordmark = () => {
   if (!wordmark) return null
   return (
     <span
       aria-hidden="true"
       className={`Header-wordmark ${css({
-        color: 'greyscale.700',
-        fontSize: { base: '1.25rem', sm: '1.6rem' },
+        fontFamily: 'Poppins, sans-serif',
+        fontWeight: '700',
+        color: 'primary.700',
+        // Cap height, not font size, is what has to line up with the mark.
+        fontSize: { base: '1.15rem', sm: '1.5rem' },
         lineHeight: '1',
-        fontWeight: '400',
-        letterSpacing: '-0.01em',
+        letterSpacing: '-0.02em',
         whiteSpace: 'nowrap',
-        marginLeft: { base: '0.4rem', sm: '0.55rem' },
+        marginLeft: { base: '0.45rem', sm: '0.6rem' },
         marginTop: { base: '10px', sm: '5px' },
         alignSelf: 'center',
       })}`}

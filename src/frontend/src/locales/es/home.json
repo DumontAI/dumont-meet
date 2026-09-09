@@ -60,15 +60,7 @@
       "body": "Las llamadas pasan por el servidor multimedia propio de Dumont, así que el audio y el vídeo nunca pasan por un proveedor externo."
     }
   },
-  "greeting": {
-    "morning": "Buenos días",
-    "morningNamed": "Buenos días, {{name}}",
-    "afternoon": "Buenas tardes",
-    "afternoonNamed": "Buenas tardes, {{name}}",
-    "evening": "Buenas noches",
-    "eveningNamed": "Buenas noches, {{name}}"
-  },
-  "signedInIntro": "Empieza una reunión o pega un enlace para unirte a una.",
+  "signedInIntro": "Crea una sala y comparte el enlace, o pega un enlace que hayas recibido.",
   "panel": {
     "loading": "Cargando",
     "error": "No se ha podido cargar esta lista.",
@@ -84,5 +76,6 @@
       "empty": "Aún no hay grabaciones. Inicia una grabación durante una reunión y aparecerá aquí cuando esté lista.",
       "unknownRoom": "Sala eliminada"
     }
-  }
+  },
+  "signedInHeading": "Iniciar o unirse a una reunion"
 }

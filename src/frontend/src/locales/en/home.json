@@ -60,15 +60,7 @@
     "carouselLabel": "Introduction slideshow",
     "slidePosition": "Slide {{current}} of {{total}}"
   },
-  "greeting": {
-    "morning": "Good morning",
-    "morningNamed": "Good morning, {{name}}",
-    "afternoon": "Good afternoon",
-    "afternoonNamed": "Good afternoon, {{name}}",
-    "evening": "Good evening",
-    "eveningNamed": "Good evening, {{name}}"
-  },
-  "signedInIntro": "Start a meeting now, or paste a link to join one.",
+  "signedInIntro": "Create a room and share the link, or paste a link you were sent.",
   "panel": {
     "loading": "Loading",
     "error": "We could not load this list.",
@@ -84,5 +76,6 @@
       "empty": "No recordings yet. Start a recording during a meeting and it will show up here once it is ready.",
       "unknownRoom": "Deleted room"
     }
-  }
+  },
+  "signedInHeading": "Start or join a meeting"
 }

@@ -60,15 +60,7 @@
     "carouselLabel": "Einführungs-Diashow",
     "slidePosition": "Folie {{current}} von {{total}}"
   },
-  "greeting": {
-    "morning": "Guten Morgen",
-    "morningNamed": "Guten Morgen, {{name}}",
-    "afternoon": "Guten Tag",
-    "afternoonNamed": "Guten Tag, {{name}}",
-    "evening": "Guten Abend",
-    "eveningNamed": "Guten Abend, {{name}}"
-  },
-  "signedInIntro": "Starte ein Meeting oder füge einen Link ein, um einem beizutreten.",
+  "signedInIntro": "Erstellen Sie einen Raum und teilen Sie den Link, oder fugen Sie einen erhaltenen Link ein.",
   "panel": {
     "loading": "Wird geladen",
     "error": "Diese Liste konnte nicht geladen werden.",
@@ -84,5 +76,6 @@
       "empty": "Noch keine Aufzeichnungen. Starte eine Aufzeichnung in einem Meeting, dann erscheint sie hier, sobald sie fertig ist.",
       "unknownRoom": "Gelöschter Raum"
     }
-  }
+  },
+  "signedInHeading": "Meeting starten oder beitreten"
 }
