@@ -60,15 +60,7 @@
     "carouselLabel": "Introductie-diavoorstelling",
     "slidePosition": "Dia {{current}} van {{total}}"
   },
-  "greeting": {
-    "morning": "Goedemorgen",
-    "morningNamed": "Goedemorgen, {{name}}",
-    "afternoon": "Goedemiddag",
-    "afternoonNamed": "Goedemiddag, {{name}}",
-    "evening": "Goedenavond",
-    "eveningNamed": "Goedenavond, {{name}}"
-  },
-  "signedInIntro": "Start een vergadering of plak een link om deel te nemen.",
+  "signedInIntro": "Maak een ruimte en deel de link, of plak een link die je hebt gekregen.",
   "panel": {
     "loading": "Laden",
     "error": "Deze lijst kon niet worden geladen.",
@@ -84,5 +76,6 @@
       "empty": "Nog geen opnames. Start een opname tijdens een vergadering, dan verschijnt die hier zodra ze klaar is.",
       "unknownRoom": "Verwijderde ruimte"
     }
-  }
+  },
+  "signedInHeading": "Een vergadering starten of eraan deelnemen"
 }

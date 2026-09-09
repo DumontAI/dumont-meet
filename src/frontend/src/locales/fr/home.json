@@ -60,15 +60,7 @@
       "body": "Les appels transitent par le serveur média de Dumont : ni l'audio ni la vidéo ne passent par un prestataire tiers."
     }
   },
-  "greeting": {
-    "morning": "Bonjour",
-    "morningNamed": "Bonjour {{name}}",
-    "afternoon": "Bon après-midi",
-    "afternoonNamed": "Bon après-midi {{name}}",
-    "evening": "Bonsoir",
-    "eveningNamed": "Bonsoir {{name}}"
-  },
-  "signedInIntro": "Démarrez une réunion, ou collez un lien pour en rejoindre une.",
+  "signedInIntro": "Creez une salle et partagez le lien, ou collez un lien recu.",
   "panel": {
     "loading": "Chargement",
     "error": "Impossible de charger cette liste.",
@@ -84,5 +76,6 @@
       "empty": "Aucun enregistrement pour l'instant. Lancez un enregistrement pendant une réunion : il apparaîtra ici une fois prêt.",
       "unknownRoom": "Salle supprimée"
     }
-  }
+  },
+  "signedInHeading": "Demarrer ou rejoindre une reunion"
 }
