@@ -59,5 +59,30 @@
     },
     "carouselLabel": "Introduction slideshow",
     "slidePosition": "Slide {{current}} of {{total}}"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "morningNamed": "Good morning, {{name}}",
+    "afternoon": "Good afternoon",
+    "afternoonNamed": "Good afternoon, {{name}}",
+    "evening": "Good evening",
+    "eveningNamed": "Good evening, {{name}}"
+  },
+  "signedInIntro": "Start a meeting now, or paste a link to join one.",
+  "panel": {
+    "loading": "Loading",
+    "error": "We could not load this list.",
+    "retry": "Try again",
+    "rooms": {
+      "title": "Your rooms",
+      "empty": "No saved rooms yet. Create a meeting for a later date and it will be kept here, ready to reuse.",
+      "copy": "Copy the link to {{name}}",
+      "copied": "Link copied"
+    },
+    "recordings": {
+      "title": "Recent recordings",
+      "empty": "No recordings yet. Start a recording during a meeting and it will show up here once it is ready.",
+      "unknownRoom": "Deleted room"
+    }
   }
 }

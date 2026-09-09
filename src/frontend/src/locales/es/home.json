@@ -1,7 +1,7 @@
 {
   "createMeeting": "Crear una reunión",
   "heading": "Videoconferencias sencillas y seguras",
-  "intro": "Comunícate y trabaja con facilidad, manteniendo siempre el control de tus datos",
+  "intro": "Habla cara a cara con tu equipo y tus clientes. Los invitados se unen desde un enlace, sin necesidad de cuenta.",
   "joinInputError": "Introduce un enlace o un código de reunión. Ejemplos:",
   "joinInputExample": "Un código de reunión tiene este aspecto: abc-defg-hij",
   "joinInputLabel": "Enlace completo o código de la reunión",
@@ -48,16 +48,41 @@
       "tooltip": "Acceder al formulario"
     },
     "slide1": {
-      "title": "Pásate a la sencillez. ¡Pruébanos ahora mismo!",
-      "body": "Descubre una solución intuitiva y accesible, pensada para el sector público y todos sus colaboradores."
+      "title": "Empieza una reunión en dos clics",
+      "body": "Crea una sala y comparte el enlace. Quien lo reciba entra directamente desde el navegador, sin instalar nada."
     },
     "slide2": {
-      "title": "Organiza llamadas de grupo sin límite",
-      "body": "Reuniones sin límite de tiempo, con una comunicación fluida y de alta calidad, sea cual sea el número de participantes."
+      "title": "Llamadas de grupo sin límite de tiempo",
+      "body": "Tus reuniones duran lo que haga falta, sin límite de duración ni licencias por usuario."
     },
     "slide3": {
-      "title": "Transforma tus reuniones con la IA",
-      "body": "Obtén transcripciones precisas y accionables para impulsar tu productividad. Función experimental, ¡pruébala ahora!"
+      "title": "Funciona sobre la infraestructura de Dumont",
+      "body": "Las llamadas pasan por el servidor multimedia propio de Dumont, así que el audio y el vídeo nunca pasan por un proveedor externo."
+    }
+  },
+  "greeting": {
+    "morning": "Buenos días",
+    "morningNamed": "Buenos días, {{name}}",
+    "afternoon": "Buenas tardes",
+    "afternoonNamed": "Buenas tardes, {{name}}",
+    "evening": "Buenas noches",
+    "eveningNamed": "Buenas noches, {{name}}"
+  },
+  "signedInIntro": "Empieza una reunión o pega un enlace para unirte a una.",
+  "panel": {
+    "loading": "Cargando",
+    "error": "No se ha podido cargar esta lista.",
+    "retry": "Reintentar",
+    "rooms": {
+      "title": "Tus salas",
+      "empty": "Aún no tienes salas guardadas. Crea una reunión para más tarde y quedará aquí, lista para reutilizarla.",
+      "copy": "Copiar el enlace de {{name}}",
+      "copied": "Enlace copiado"
+    },
+    "recordings": {
+      "title": "Grabaciones recientes",
+      "empty": "Aún no hay grabaciones. Inicia una grabación durante una reunión y aparecerá aquí cuando esté lista.",
+      "unknownRoom": "Sala eliminada"
     }
   }
 }
