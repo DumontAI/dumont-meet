@@ -7,6 +7,7 @@ import { UserAware } from '@/features/auth/components/UserAware'
 import { useUser } from '@/features/auth/api/useUser'
 import { JoinMeetingDialog } from '../components/JoinMeetingDialog'
 import { IntroSlider } from '../components/IntroSlider'
+import { HomePanel } from '../components/HomePanel'
 import { MoreLink } from '../components/MoreLink'
 import { CreateMeetingMenu } from '../components/CreateMeetingMenu'
 import { ReactNode, useEffect, useState } from 'react'
@@ -142,9 +143,24 @@ const IntroText = styled('div', {
   },
 })
 
+const getGreetingPeriod = () => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'morning'
+  if (hour < 18) return 'afternoon'
+  return 'evening'
+}
+
 const Home = () => {
   const { t } = useTranslation('home')
-  const { isLoggedIn } = useUser()
+  const { isLoggedIn, user } = useUser()
+
+  // `full_name` is often empty on this deployment, so the nameless greeting is
+  // the common path, not an edge case.
+  const firstName = user?.full_name?.trim().split(/\s+/)[0]
+  const greeting = t(
+    `greeting.${getGreetingPeriod()}${firstName ? 'Named' : ''}`,
+    { name: firstName }
+  )
 
   const [redirectFailed, setRedirectFailed] = useState(false)
   const { data } = useConfig()
@@ -182,8 +198,10 @@ const Home = () => {
       <Screen>
         <Columns>
           <LeftColumn>
-            <Heading>{t('heading')}</Heading>
-            <IntroText>{t('intro')}</IntroText>
+            <Heading>{isLoggedIn ? greeting : t('heading')}</Heading>
+            <IntroText>
+              {isLoggedIn ? t('signedInIntro') : t('intro')}
+            </IntroText>
             <div
               className={css({
                 display: 'flex',
@@ -216,7 +234,7 @@ const Home = () => {
             <MoreLink />
           </LeftColumn>
           <RightColumn>
-            <IntroSlider />
+            {isLoggedIn ? <HomePanel /> : <IntroSlider />}
           </RightColumn>
         </Columns>
       </Screen>

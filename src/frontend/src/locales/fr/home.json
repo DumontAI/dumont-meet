@@ -59,5 +59,30 @@
       "title": "Hébergé sur l'infrastructure Dumont",
       "body": "Les appels transitent par le serveur média de Dumont : ni l'audio ni la vidéo ne passent par un prestataire tiers."
     }
+  },
+  "greeting": {
+    "morning": "Bonjour",
+    "morningNamed": "Bonjour {{name}}",
+    "afternoon": "Bon après-midi",
+    "afternoonNamed": "Bon après-midi {{name}}",
+    "evening": "Bonsoir",
+    "eveningNamed": "Bonsoir {{name}}"
+  },
+  "signedInIntro": "Démarrez une réunion, ou collez un lien pour en rejoindre une.",
+  "panel": {
+    "loading": "Chargement",
+    "error": "Impossible de charger cette liste.",
+    "retry": "Réessayer",
+    "rooms": {
+      "title": "Vos salles",
+      "empty": "Aucune salle enregistrée pour l'instant. Créez une réunion pour une date ultérieure : elle restera ici, prête à être réutilisée.",
+      "copy": "Copier le lien de {{name}}",
+      "copied": "Lien copié"
+    },
+    "recordings": {
+      "title": "Enregistrements récents",
+      "empty": "Aucun enregistrement pour l'instant. Lancez un enregistrement pendant une réunion : il apparaîtra ici une fois prêt.",
+      "unknownRoom": "Salle supprimée"
+    }
   }
 }
