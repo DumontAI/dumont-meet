@@ -24,7 +24,7 @@ from livekit.agents import (
 from livekit.agents import (
     room_io as lk_room_io,
 )
-from livekit.plugins import deepgram, silero
+from livekit.plugins import deepgram, openai, silero
 
 import voxtral_vllm_stt
 from observability import configure_sentry, set_job_context
@@ -57,6 +57,25 @@ def create_stt_provider(vad: silero.VAD | None = None):
         _stt_instance = deepgram.STT(
             model=os.getenv("DEEPGRAM_STT_MODEL", "nova-3"),
             language=os.getenv("DEEPGRAM_STT_LANGUAGE", "multi"),
+        )
+    elif STT_PROVIDER == "groq":
+        # Groq serves Whisper on the OpenAI-compatible /audio/transcriptions
+        # route. livekit-plugins-openai 1.6.7 ships no with_groq helper (only
+        # with_azure and with_ovhcloud), so point the OpenAI STT at Groq
+        # directly. api_key is read explicitly: the plugin would otherwise fall
+        # back to OPENAI_API_KEY and talk to the wrong provider.
+        #
+        # This endpoint is segment based, not streaming, so capabilities
+        # advertise streaming=False and Agent.default.stt_node wraps it in a
+        # stt.StreamAdapter driven by AgentActivity.vad, which resolves to the
+        # prewarmed VAD handed to AgentSession. No per-participant model load,
+        # and STT_PROVIDER=groq therefore requires ENABLE_SILERO_VAD=true.
+        _stt_instance = openai.STT(
+            model=os.getenv("GROQ_STT_MODEL", "whisper-large-v3-turbo"),
+            # Whisper wants a single ISO-639-1 code here, not Deepgram's "multi".
+            language=os.getenv("GROQ_STT_LANGUAGE", "en"),
+            base_url="https://api.groq.com/openai/v1",
+            api_key=os.environ["GROQ_API_KEY"],
         )
     elif STT_PROVIDER == "kyutai":
         _stt_instance = kyutai.STT(base_url=os.getenv("KYUTAI_STT_BASE_URL"))
