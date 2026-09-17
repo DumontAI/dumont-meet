@@ -25,6 +25,13 @@ docker build -f src/frontend/Dockerfile --target frontend-production \
   -t dumont/meet-frontend:<upstream-tag> .
 ```
 
+`VITE_APP_RECORDING_TRANSCRIPT=false` hides the transcript checkbox on the
+recording panel. That checkbox sets `transcribe: true`, which makes the backend
+POST the finished recording to `SUMMARY_SERVICE_ENDPOINT`. Dumont runs no
+summary service, so ticking it recorded audio and delivered nothing; a French
+recording on 2026-09-11 did exactly that. Live captions are the transcript
+feature here. Leave the arg unset to keep upstream behaviour.
+
 `VITE_APP_WORDMARK` draws the product name next to the logo mark, the way
 "Google Meet" is set. The logo asset is the Dumont mark on its own, so without
 it the header reads just "Dumont" and nothing names the product. When it is set
@@ -105,6 +112,20 @@ its `survey-<taskId>`. Rotating that Moveezi credential breaks Meet recording.
 is how recording looked broken for a month while the mp4s sat in MinIO. It must
 be `https://meet.dumont.cloud/recording`; the frontend route is
 `/recording/<uuid>`.
+
+**An ABORTED egress wedges the room, and a cron cleans it up.** Upstream
+finalizes only on `EGRESS_COMPLETE` or `EGRESS_LIMIT_REACHED`. An egress that
+aborts (the usual cause: Record pressed while nobody is publishing) fires
+`egress_ended`, matches neither branch, and leaves the row `ACTIVE` forever.
+One active recording per room is a unique constraint, so that room then returns
+"a recording is already in progress" for good. Seen in production 2026-09-11,
+found on 2026-09-17. `/opt/meet/ops/reconcile_recordings.py` reconciles stale
+rows against real LiveKit egress state every 15 minutes via
+`/etc/cron.d/meet-reconcile-recordings`, logging to `/var/log/meet-reconcile.log`.
+It writes only with `RECONCILE_APPLY=1` and is a dry run otherwise. Note a
+vanished egress returns a 404 from LiveKit, which the script treats as gone for
+good rather than as a transient error: treating it as transient is what leaves
+the row wedged.
 
 **A finished recording does not stop at `saved`.** It advances to
 `notification_succeeded` once the owner has been emailed, so anything filtering

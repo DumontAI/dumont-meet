@@ -30,6 +30,13 @@ import { FeatureFlags } from '@/features/analytics/enums'
 import { LimitDescription } from './LimitDescription'
 import { captureEvent, reportError } from '@/features/analytics/telemetry'
 
+// The transcript checkbox asks the backend to POST the recording to
+// SUMMARY_SERVICE_ENDPOINT. Where no summary service is deployed, ticking it
+// records audio and delivers nothing, so the deployment can hide the option
+// rather than make a promise it cannot keep. Unset leaves upstream behaviour.
+const recordingTranscriptEnabled =
+  import.meta.env.VITE_APP_RECORDING_TRANSCRIPT !== 'false'
+
 export const ScreenRecordingSidePanel = () => {
   const { data } = useConfig()
 
@@ -185,21 +192,23 @@ export const ScreenRecordingSidePanel = () => {
 
         <div className={css({ height: '15px' })} />
 
-        <div
-          className={css({
-            width: '100%',
-            marginLeft: '20px',
-          })}
-        >
-          <Checkbox
-            size="sm"
-            isSelected={includeTranscript}
-            onChange={setIncludeTranscript}
-            isDisabled={statuses.isActive || isPendingToStart}
+        {recordingTranscriptEnabled && (
+          <div
+            className={css({
+              width: '100%',
+              marginLeft: '20px',
+            })}
           >
-            <Text variant="sm">{t('details.transcription')}</Text>
-          </Checkbox>
-        </div>
+            <Checkbox
+              size="sm"
+              isSelected={includeTranscript}
+              onChange={setIncludeTranscript}
+              isDisabled={statuses.isActive || isPendingToStart}
+            >
+              <Text variant="sm">{t('details.transcription')}</Text>
+            </Checkbox>
+          </div>
+        )}
       </VStack>
       <ControlsButton
         i18nKeyPrefix={keyPrefix}

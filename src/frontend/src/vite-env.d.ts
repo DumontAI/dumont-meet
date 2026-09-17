@@ -10,6 +10,9 @@ interface ImportMetaEnv {
   // is empty the logo asset is expected to be a full lockup and carries the
   // title on its own.
   readonly VITE_APP_WORDMARK: string
+  // "false" hides the transcript checkbox on the recording panel, for
+  // deployments with no SUMMARY_SERVICE_ENDPOINT behind it.
+  readonly VITE_APP_RECORDING_TRANSCRIPT: string
 }
 
 interface ImportMeta {
