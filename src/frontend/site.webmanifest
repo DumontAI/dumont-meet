@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "Dumont Meet",
   "short_name": "Dumont Meet",
   "icons": [
@@ -14,6 +15,10 @@
     }
   ],
   "start_url": "/",
+  "scope": "/",
+  "launch_handler": {
+    "client_mode": "navigate-new"
+  },
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
   "display": "standalone"
