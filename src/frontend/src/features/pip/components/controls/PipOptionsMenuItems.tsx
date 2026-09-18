@@ -24,7 +24,14 @@ export const PipOptionsMenuItems = ({
   const { buttonProps: screenShareProps, enabled: isScreenSharing } =
     useTrackToggle({
       source: Track.Source.ScreenShare,
-      captureOptions: { audio: true, selfBrowserSurface: 'include' },
+      captureOptions: {
+        audio: true,
+        selfBrowserSurface: 'include',
+        // Dumont: never offer "share system audio" on a whole screen. System
+        // audio includes the call itself, and Chrome can suppress it locally,
+        // which leaves the presenter unable to hear anyone. Tab audio still works.
+        systemAudio: 'exclude',
+      },
     })
   const { toggle: toggleReactions } = useReactionsToolbar()
   const itemClass = menuRecipe({ icon: true, variant: 'dark' }).item

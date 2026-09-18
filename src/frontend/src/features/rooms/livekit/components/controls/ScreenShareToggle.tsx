@@ -28,7 +28,14 @@ export const ScreenShareToggle = ({
   const { buttonProps, enabled } = useTrackToggle({
     ...props,
     source: Track.Source.ScreenShare,
-    captureOptions: { audio: true, selfBrowserSurface: 'include' },
+    captureOptions: {
+      audio: true,
+      selfBrowserSurface: 'include',
+      // Dumont: never offer "share system audio" on a whole screen. System
+      // audio includes the call itself, and Chrome can suppress it locally,
+      // which leaves the presenter unable to hear anyone. Tab audio still works.
+      systemAudio: 'exclude',
+    },
   })
 
   const tooltipLabel = enabled ? 'stop' : 'start'
