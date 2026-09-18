@@ -16,6 +16,11 @@ Branding assets, the document head, a handful of React components, and one backe
 - `src/frontend/src/features/rooms/livekit/components/ScreenShareErrorModal.tsx` — drops the "for more information" link to `lasuite.crisp.help`, DINUM's French Crisp desk. The last user-visible La Suite URL. The System Preferences deep link that survives it is the actual fix, so nothing useful was lost and no Dumont help page had to be invented. The now-unused `helpLinkText`/`helpLinkLabel` locale strings are deliberately left in all four locales: inert, and cheaper than a four-file diff to conflict on at every rebase
 - `src/frontend/site.webmanifest` — `name`/`short_name`. `vite.config.ts` injects the title into the copy it emits at `/site.webmanifest`, but the `<link rel="manifest">` in `index.html` makes Vite emit a *second*, untransformed copy at `/assets/site-<hash>.webmanifest`, and that hashed one is what the browser actually loads. Without a name in the source file an installed PWA has no name.
 
+- `ScreenShareToggle.tsx` and `PipOptionsMenuItems.tsx` pass `systemAudio: 'exclude'`. Without it Chrome offers "share system audio" on a whole screen; system audio contains the call itself and Chrome can suppress it locally, so the presenter stopped hearing anyone (reported 2026-09-18). Tab audio is still offered. Chrome recommends this setting for conferencing apps
+- `dumont-styles.css` sets in-room `primary-dark` 50 to 300 to neutral charcoal. They were a teal-tinted near-black behind every tile, which read as murky; teal starts at 400 and is only the accent
+- A "View" submenu in the in-call "..." menu (`controls/Options/ViewMenuItem.tsx`, `stores/viewPreferences.ts`, `StageLayout.tsx`): Automatic / Speaker / Gallery, Hide self view, Hide non-video participants, saved per browser
+- Cherry-picked upstream `771f58c0` (waiting-room chime on every knock), because the lobby is now the default
+
 The app title comes from the stock build arg, not a patch:
 
 ```bash
@@ -88,6 +93,25 @@ the command above instead of bumping `lasuite/meet-backend`.
 
 `/opt/meet` on airbase-hel1. See the `dumont-meet-deployment` note for the
 LiveKit sharing constraints.
+
+## Waiting room by default (2026-09-18)
+
+Rooms are `trusted`, not `public`: the 7 people with a Meet account walk in,
+everyone else knocks and any signed-in participant can admit them. This is the
+answer to "a leaked link should not be enough". A passcode was considered and
+rejected: it travels in the same invite as the link, so it adds friction
+without adding a gate, while the lobby shows the host who is knocking.
+
+- `RESOURCE_DEFAULT_ACCESS_LEVEL=trusted` and `EXTERNAL_API_DEFAULT_ACCESS_LEVEL=trusted`
+  in `/opt/meet/env.d/common` cover rooms made in the UI and through the
+  external API (Chat `/meet`, Cal.com). Guests of a booked call wait until a
+  Dumont person joins.
+- The 73 rooms that existed were switched from `public` in the DB; their ids are
+  in `/opt/meet/ops/meet-rooms-were-public-20260918.json` for a rollback.
+- `trusted` is only a gate because `OIDC_CREATE_USER=False`: a stranger who
+  self-registers at Dumont Auth still has no Meet user. Turning that on would
+  make every self-registered account a trusted participant.
+- A single room can still be set to public or restricted from its admin panel.
 
 ## Recording (COR-5)
 
