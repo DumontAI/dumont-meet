@@ -227,8 +227,52 @@ Deepgram key that Dumont does not have. `kyutai` and `voxtral-vllm` both need a
 GPU, and hel1 has integrated AMD graphics. Groq serves
 `whisper-large-v3-turbo` on an OpenAI-compatible `/audio/transcriptions` route
 with a key already in the vault (`hel1: enzo`, `GROQ_API_KEY`). Overridable with
-`GROQ_STT_MODEL` and `GROQ_STT_LANGUAGE`; the language is a single ISO-639-1
-code, Deepgram's `multi` is not a thing Whisper accepts.
+`GROQ_STT_MODEL` and `GROQ_STT_LANGUAGE`.
+
+**Language: auto-detect by default, because nothing selects one per meeting.**
+Dumont calls run in English, French, Portuguese and Spanish, and the backend
+passes no language to the agent dispatch, so the agent's own config is the only
+lever. `GROQ_STT_LANGUAGE` unset, empty or `auto` (the deployed value) means
+Whisper detects the language itself; a real ISO-639-1 code such as `fr` pins
+that language, which is cheaper and slightly more accurate for a room known to
+be monolingual. Deepgram's `multi` is not a thing Whisper accepts.
+
+Auto-detect is not "pass an empty language", and this is the trap. Whisper
+auto-detects only when the request carries no `language` field at all, but
+`livekit-plugins-openai` 1.6.7 always sends one:
+
+```python
+language=self._opts.language.language if self._opts.language else ""
+```
+
+Both `openai.STT(language="")` and `openai.STT(detect_language=True)` (which the
+plugin rewrites to `language=""`) therefore post an empty field, and Groq answers
+`400 invalid_language: unsupported language:` with the list of codes it accepts.
+`language="auto"` 400s the same way. Since the plugin exposes no way to omit the
+field, `multi_user_transcriber.py` swaps `_stt_instance._opts.language` for
+`_AutoDetectLanguage`, a truthy `str` subclass whose `.language` is the OpenAI
+SDK's `omit` marker, so the field is dropped from the multipart body. That reads
+one plugin private, pinned by `uv.lock`; if the plugin ever grows a real
+"omit language" option, use it and delete the sentinel.
+`src/agents/test_stt_language.py` guards the wiring by asserting what the plugin
+would post for each env value, and runs inside the built image:
+
+```bash
+docker run --rm --entrypoint python dumont/meet-transcriber:<tag> test_stt_language.py
+```
+
+Verified end to end on 2026-09-18 by publishing macOS `say` clips (Thomas /
+Luciana / Mónica / Samantha) into a room with `livekit-cli room join --publish`
+and reading `received user transcript` out of the agent logs: French,
+Portuguese, Spanish and English all came back verbatim in the spoken language,
+with only proper nouns mangled ("Dumont Meet" became "Dumont-Méhaie",
+"domão mete", "Dumont Med"). Whisper still hallucinates filler on non-speech
+audio when it is asked to: 4s of digital silence posted straight to Groq returns
+`" Thank you."`, a tone returns `" ."`, pink noise returns `" ..."`, identically
+with and without a pinned language. In the live pipeline Silero gates that out,
+and 80s of alternating tone and silence published into a room produced zero
+captions, so auto-detect does not make hallucination worse than the pinned
+config did.
 
 `livekit-plugins-openai` 1.6.7 has no `with_groq` helper (only `with_azure` and
 `with_ovhcloud`), so the branch points `openai.STT` at
@@ -252,3 +296,12 @@ The VAD is loaded once per worker process in `prewarm()` and reused by every
 session, so a joining participant costs no model load. `ENABLE_SILERO_VAD=false`
 is therefore not compatible with `STT_PROVIDER=groq`: with no session VAD the
 stream adapter cannot be built and `stt_node` raises on the first frame.
+
+A speaker who never pauses long enough gets nothing for a minute. The stream
+adapter only calls Groq on Silero's end-of-speech, and Silero caps a single
+utterance at `max_buffered_speech` (60s), logging
+`max_buffered_speech reached, ignoring further data for the current speech input`
+and discarding the overflow until the speaker finally stops. Test clips need
+audible gaps between sentences: a 112s clip of continuous TTS produced one
+truncated caption after 60s, the same clip with 2.5s of silence every 28s
+produced a clean caption per sentence group.
