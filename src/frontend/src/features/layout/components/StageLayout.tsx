@@ -9,21 +9,32 @@ import {
   log,
   type TrackReferenceOrPlaceholder,
 } from '@livekit/components-core'
-import { Track } from 'livekit-client'
+import { RoomEvent, Track } from 'livekit-client'
 import { useSnapshot } from 'valtio'
 import { clearPinnedTrack, layoutStore, setPinnedTrack } from '@/stores/layout'
 import { useEffect, useRef } from 'react'
+import { viewPreferencesStore } from '@/stores/viewPreferences'
+import { useLastRemoteSpeaker } from '@/features/layout/hooks/useLastRemoteSpeaker'
 
 export const StageLayout = () => {
   const lastAutoFocusedScreenShareTrack =
     useRef<TrackReferenceOrPlaceholder | null>(null)
+
+  const { layoutMode, hideSelfView, hideNonVideo } =
+    useSnapshot(viewPreferencesStore)
 
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
-    { updateOnlyOn: [], onlySubscribed: false }
+    {
+      // Hiding non-video tiles needs to see camera mute changes.
+      updateOnlyOn: hideNonVideo
+        ? [RoomEvent.TrackMuted, RoomEvent.TrackUnmuted]
+        : [],
+      onlySubscribed: false,
+    }
   )
 
   const screenShareTracks = tracks
@@ -32,15 +43,44 @@ export const StageLayout = () => {
 
   const { pinnedTrackRef } = useSnapshot(layoutStore)
 
-  const carouselTracks = tracks.filter(
-    (track) => !isEqualTrackRef(track, pinnedTrackRef)
+  const lastSpeaker = useLastRemoteSpeaker(layoutMode === 'speaker')
+  const isRemoteCamera = (track: TrackReferenceOrPlaceholder) =>
+    track.source === Track.Source.Camera && !track.participant.isLocal
+  const speakerTrack =
+    layoutMode === 'speaker' && tracks.length > 1
+      ? (tracks.find(
+          (track) =>
+            isRemoteCamera(track) && track.participant.identity === lastSpeaker
+        ) ?? tracks.find(isRemoteCamera))
+      : undefined
+
+  // A pin (manual, or an auto-focused screen share) wins over the speaker.
+  const focusedTrack = pinnedTrackRef ?? speakerTrack
+
+  const isHiddenTile = (track: TrackReferenceOrPlaceholder) =>
+    track.source === Track.Source.Camera &&
+    ((hideSelfView && track.participant.isLocal) ||
+      (hideNonVideo && (!isTrackReference(track) || track.publication.isMuted)))
+  const shownTracks = tracks.filter((track) => !isHiddenTile(track))
+  // Never leave an empty stage: if the filters hide everything, show all.
+  const visibleTracks = shownTracks.length ? shownTracks : tracks
+
+  const carouselTracks = visibleTracks.filter(
+    (track) => !isEqualTrackRef(track, focusedTrack)
   )
 
   /* eslint-disable react-hooks/exhaustive-deps */
   // Code duplicated from LiveKit; this warning will be addressed in the refactoring.
   useEffect(() => {
+    // Gallery mode never auto-focuses a screen share; drop one it inherited.
+    if (layoutMode === 'gallery') {
+      if (lastAutoFocusedScreenShareTrack.current) {
+        clearPinnedTrack()
+        lastAutoFocusedScreenShareTrack.current = null
+      }
+    }
     // If screen share tracks are published, and no pin is set explicitly, auto set the screen share.
-    if (
+    else if (
       screenShareTracks.some((track) => track.publication.isSubscribed) &&
       lastAutoFocusedScreenShareTrack.current === null
     ) {
@@ -82,14 +122,15 @@ export const StageLayout = () => {
       .join(),
     pinnedTrackRef?.publication?.trackSid,
     tracks,
+    layoutMode,
   ])
   /* eslint-enable react-hooks/exhaustive-deps */
 
   return (
     <>
-      {!pinnedTrackRef ? (
+      {!focusedTrack ? (
         <div className="lk-grid-layout-wrapper" style={{ height: 'auto' }}>
-          <GridLayout tracks={tracks} style={{ padding: 0 }}>
+          <GridLayout tracks={visibleTracks} style={{ padding: 0 }}>
             <ParticipantTile />
           </GridLayout>
         </div>
@@ -104,7 +145,7 @@ export const StageLayout = () => {
             >
               <ParticipantTile />
             </CarouselLayout>
-            <FocusLayout trackRef={pinnedTrackRef} />
+            <FocusLayout trackRef={focusedTrack} />
           </FocusLayoutContainer>
         </div>
       )}

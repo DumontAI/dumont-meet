@@ -335,7 +335,17 @@
         "exit": "Exit fullscreen mode"
       },
       "support": "Contact support",
-      "documentation": "Documentation"
+      "documentation": "Documentation",
+      "view": {
+        "label": "View",
+        "layout": {
+          "auto": "Automatic",
+          "speaker": "Speaker",
+          "gallery": "Gallery"
+        },
+        "hideSelfView": "Hide self view",
+        "hideNonVideo": "Hide non-video participants"
+      }
     }
   },
   "effects": {

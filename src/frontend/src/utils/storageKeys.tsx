@@ -6,4 +6,5 @@ export const STORAGE_KEYS = {
   USER_PREFERENCES: 'app_user_preferences',
   USER: 'app_user',
   ACCESSIBILITY: 'app_accessibility_settings',
+  VIEW_PREFERENCES: 'app_view_preferences',
 } as const
