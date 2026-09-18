@@ -220,7 +220,7 @@ class UserViewSet(
         )
 
 
-class RoomViewSet(
+class RoomViewSet(  # pylint: disable=too-many-public-methods
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
@@ -551,6 +551,24 @@ class RoomViewSet(
 
         participants = lobby_service.list_waiting_participants(room.id)
         return drf_response.Response({"participants": participants})
+
+    @decorators.action(
+        detail=True,
+        methods=["GET"],
+        url_path="participants-preview",
+        url_name="participants-preview",
+    )
+    def participants_preview(self, request, pk=None):  # pylint: disable=unused-argument
+        """Who is already in the call, for the pre-join screen.
+
+        Same gate as the LiveKit token in the room serializer: people who would
+        land in the lobby do not learn who is inside.
+        """
+        room = self.get_object()
+        if not room.can_join_directly(request.user, room.get_role(request.user)):
+            raise drf_exceptions.PermissionDenied()
+
+        return drf_response.Response(utils.list_participants_preview(str(room.id)))
 
     @decorators.action(
         detail=False,

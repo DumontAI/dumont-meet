@@ -94,6 +94,13 @@
     "timeoutInvite": {
       "title": "You cannot join this call",
       "body": "No one responded to your request"
+    },
+    "presence": {
+      "empty": "No one else is here yet",
+      "one": "{{name}} is in this call",
+      "many_one": "{{name}} and {{count}} other are in this call",
+      "many_other": "{{name}} and {{count}} others are in this call",
+      "someone": "Someone"
     }
   },
   "leaveRoomPrompt": "This will make you leave the meeting.",

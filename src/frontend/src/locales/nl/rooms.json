@@ -94,6 +94,13 @@
     "timeoutInvite": {
       "title": "U kunt niet deelnemen aan dit gesprek",
       "body": "Niemand heeft gereageerd op uw verzoek om deel te nemen aan het gesprek"
+    },
+    "presence": {
+      "empty": "Er is nog niemand anders",
+      "one": "{{name}} is in dit gesprek",
+      "many_one": "{{name}} en {{count}} ander zijn in dit gesprek",
+      "many_other": "{{name}} en {{count}} anderen zijn in dit gesprek",
+      "someone": "Iemand"
     }
   },
   "leaveRoomPrompt": "Dat zal u de vergadering doen verlaten.",

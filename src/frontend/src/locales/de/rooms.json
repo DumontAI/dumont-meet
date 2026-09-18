@@ -94,6 +94,13 @@
     "timeoutInvite": {
       "title": "Du kannst diesem Meeting nicht beitreten",
       "body": "Niemand hat auf deine Anfrage reagiert"
+    },
+    "presence": {
+      "empty": "Noch niemand sonst ist hier",
+      "one": "{{name}} ist in diesem Anruf",
+      "many_one": "{{name}} und {{count}} weitere Person sind in diesem Anruf",
+      "many_other": "{{name}} und {{count}} weitere Personen sind in diesem Anruf",
+      "someone": "Jemand"
     }
   },
   "leaveRoomPrompt": "Hiermit verlässt du das Meeting.",

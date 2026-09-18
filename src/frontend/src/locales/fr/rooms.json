@@ -94,6 +94,13 @@
     "timeoutInvite": {
       "title": "Vous ne pouvez pas participer à cet appel",
       "body": "Personne n'a répondu à votre demande de participation à l'appel"
+    },
+    "presence": {
+      "empty": "Personne d'autre n'est encore là",
+      "one": "{{name}} participe à cet appel",
+      "many_one": "{{name}} et {{count}} autre personne participent à cet appel",
+      "many_other": "{{name}} et {{count}} autres personnes participent à cet appel",
+      "someone": "Quelqu'un"
     }
   },
   "leaveRoomPrompt": "Revenir à l'accueil vous fera quitter la réunion.",
