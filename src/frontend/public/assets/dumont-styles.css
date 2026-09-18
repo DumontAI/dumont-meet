@@ -29,12 +29,16 @@
   --colors-blue-800: #122a48;
   --colors-blue-900: #0e2039;
 
-  /* --- teal, used for in-room dark mode and accents --- */
-  --colors-primary-dark-50: #06201f;
-  --colors-primary-dark-75: #0a2d2b;
-  --colors-primary-dark-100: #0e3a37;
-  --colors-primary-dark-200: #155753;
-  --colors-primary-dark-300: #1d7570;
+  /* --- in-room dark mode ---
+   * 50 to 300 are the call's surfaces (background, tiles, control buttons,
+   * hover, borders). They are neutral charcoal, not teal: a tinted near-black
+   * behind every video reads as murky and shifts skin tones. Teal starts at
+   * 400 and is kept for accents: active toggles, focus, speaking outline. */
+  --colors-primary-dark-50: #161718;
+  --colors-primary-dark-75: #202123;
+  --colors-primary-dark-100: #2b2c2f;
+  --colors-primary-dark-200: #3a3b3f;
+  --colors-primary-dark-300: #4d4f54;
   --colors-primary-dark-400: #2d968f;
   --colors-primary-dark-500: #41b8b0;
   --colors-primary-dark-600: #5fc7c0;
