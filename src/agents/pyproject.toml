@@ -54,6 +54,11 @@ select = [
 "tests/*" = [
     "S101", # use of assert
 ]
+"test_*.py" = [
+    "E402", # env var must be set before importing the module under test
+    "S101", # use of assert
+    "T201", # print is the pass/fail signal for a self-check run by hand
+]
 
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.

@@ -5,6 +5,7 @@ import contextlib
 import logging
 import os
 
+import openai as openai_sdk
 from dotenv import load_dotenv
 from lasuite.plugins import kyutai
 from livekit import api, rtc
@@ -41,6 +42,31 @@ ENABLE_SILERO_VAD = os.getenv("ENABLE_SILERO_VAD", "true").lower() == "true"
 SESSION_DRAIN_TIMEOUT_S = 15.0
 
 
+class _AutoDetectLanguage(str):
+    """Language sentinel that makes livekit-plugins-openai omit the field.
+
+    Whisper auto-detects only when no ``language`` is posted at all, but
+    livekit-plugins-openai 1.6.7 always sends the field::
+
+        language=self._opts.language.language if self._opts.language else ""
+
+    So both ``language=""`` and ``detect_language=True`` (which the plugin
+    turns into ``language=""``) post an empty field, and Groq answers
+    ``400 invalid_language: unsupported language:``. Verified against
+    api.groq.com: empty field 400s, no field auto-detects.
+
+    This sentinel stays truthy so the plugin takes the first branch, and
+    resolves ``.language`` to the OpenAI SDK's omit marker so the field is
+    dropped from the multipart body. Its own string value only ends up in the
+    emitted ``SpeechData.language``, which is cosmetic.
+    """
+
+    language = openai_sdk.omit
+
+
+_AUTO_LANGUAGE = _AutoDetectLanguage("multi")
+
+
 def create_stt_provider(vad: silero.VAD | None = None):
     """Create STT provider based on environment configuration.
 
@@ -70,13 +96,29 @@ def create_stt_provider(vad: silero.VAD | None = None):
         # stt.StreamAdapter driven by AgentActivity.vad, which resolves to the
         # prewarmed VAD handed to AgentSession. No per-participant model load,
         # and STT_PROVIDER=groq therefore requires ENABLE_SILERO_VAD=true.
+        #
+        # GROQ_STT_LANGUAGE unset, empty or "auto" means auto-detect: Dumont
+        # calls run in English, French, Portuguese and Spanish and the backend
+        # passes no per-meeting language to the agent, so a pinned language is
+        # wrong for most rooms. A real code (e.g. "fr") still pins that
+        # language, which is cheaper and more accurate when a room is known to
+        # be monolingual.
+        groq_language = os.getenv("GROQ_STT_LANGUAGE", "").strip()
+        groq_auto_detect = groq_language.lower() in ("", "auto")
         _stt_instance = openai.STT(
             model=os.getenv("GROQ_STT_MODEL", "whisper-large-v3-turbo"),
-            # Whisper wants a single ISO-639-1 code here, not Deepgram's "multi".
-            language=os.getenv("GROQ_STT_LANGUAGE", "en"),
+            # Whisper wants a single ISO-639-1 code here, not Deepgram's
+            # "multi". Inert when auto-detecting: overwritten just below.
+            language="en" if groq_auto_detect else groq_language,
             base_url="https://api.groq.com/openai/v1",
             api_key=os.environ["GROQ_API_KEY"],
         )
+        if groq_auto_detect:
+            # Reaches into the plugin's private _opts because 1.6.7
+            # exposes no way to omit the language. Pinned by uv.lock; if the
+            # plugin ever grows a real "omit language" option, use that and
+            # delete _AutoDetectLanguage. Guarded by test_stt_language.py.
+            _stt_instance._opts.language = _AUTO_LANGUAGE
     elif STT_PROVIDER == "kyutai":
         _stt_instance = kyutai.STT(base_url=os.getenv("KYUTAI_STT_BASE_URL"))
     elif STT_PROVIDER == "voxtral-vllm":
