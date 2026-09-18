@@ -335,7 +335,17 @@
         "exit": "Quitter le mode plein écran"
       },
       "support": "Contacter l'aide",
-      "documentation": "Documentation"
+      "documentation": "Documentation",
+      "view": {
+        "label": "Affichage",
+        "layout": {
+          "auto": "Automatique",
+          "speaker": "Intervenant",
+          "gallery": "Galerie"
+        },
+        "hideSelfView": "Masquer ma vidéo",
+        "hideNonVideo": "Masquer les participants sans vidéo"
+      }
     }
   },
   "effects": {

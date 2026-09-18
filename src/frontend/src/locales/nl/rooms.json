@@ -335,7 +335,17 @@
         "exit": "Stop volledig scherm stand"
       },
       "support": "Contact ondersteuning",
-      "documentation": "Documentatie"
+      "documentation": "Documentatie",
+      "view": {
+        "label": "Weergave",
+        "layout": {
+          "auto": "Automatisch",
+          "speaker": "Spreker",
+          "gallery": "Galerij"
+        },
+        "hideSelfView": "Eigen weergave verbergen",
+        "hideNonVideo": "Deelnemers zonder video verbergen"
+      }
     }
   },
   "effects": {
