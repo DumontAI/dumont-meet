@@ -19,6 +19,7 @@ Branding assets, the document head, a handful of React components, and one backe
 - `ScreenShareToggle.tsx` and `PipOptionsMenuItems.tsx` pass `systemAudio: 'exclude'`. Without it Chrome offers "share system audio" on a whole screen; system audio contains the call itself and Chrome can suppress it locally, so the presenter stopped hearing anyone (reported 2026-09-18). Tab audio is still offered. Chrome recommends this setting for conferencing apps
 - `dumont-styles.css` sets in-room `primary-dark` 50 to 300 to neutral charcoal. They were a teal-tinted near-black behind every tile, which read as murky; teal starts at 400 and is only the accent
 - A "View" submenu in the in-call "..." menu (`controls/Options/ViewMenuItem.tsx`, `stores/viewPreferences.ts`, `StageLayout.tsx`): Automatic / Speaker / Gallery, Hide self view, Hide non-video participants, saved per browser
+- `site.webmanifest` adds `id`, `scope` and `launch_handler: navigate-new`. Chrome 139+ opens in-scope links in the installed app; navigate-new gives each link its own window so a second link never replaces a live call
 - Cherry-picked upstream `771f58c0` (waiting-room chime on every knock), because the lobby is now the default
 
 The app title comes from the stock build arg, not a patch:
