@@ -5,6 +5,7 @@ Utils functions used in the core app
 # pylint: disable=R0913, R0917
 # ruff: noqa:S311, PLR0913
 
+import asyncio
 import hashlib
 import json
 import logging
@@ -28,12 +29,14 @@ import phonenumbers
 from asgiref.sync import async_to_sync
 from livekit.api import (  # pylint: disable=E0611
     AccessToken,
+    ListParticipantsRequest,
     ListRoomsRequest,
     LiveKitAPI,
     SendDataRequest,
     TwirpError,
     VideoGrants,
 )
+from livekit.protocol.models import ParticipantInfo  # pylint: disable=E0611
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +234,47 @@ def create_livekit_client(custom_configuration=None):
     configuration = custom_configuration or settings.LIVEKIT_CONFIGURATION
 
     return LiveKitAPI(session=custom_session, **configuration)
+
+
+PARTICIPANTS_PREVIEW_TIMEOUT = 3  # seconds
+
+
+@async_to_sync
+async def list_participants_preview(room_name: str) -> dict:
+    """List who is in a LiveKit room, for the pre-join screen.
+
+    Only display names and avatar colors of human participants (standard and
+    SIP) are returned: agents, egress/recorders and hidden participants are
+    skipped, and identities never leave the backend. A room LiveKit does not
+    know yet is an empty room. Any other failure degrades to an empty list with
+    available=False, so the pre-join screen never breaks on it.
+    """
+    visible_kinds = (ParticipantInfo.Kind.STANDARD, ParticipantInfo.Kind.SIP)
+    lkapi = create_livekit_client()
+    try:
+        response = await asyncio.wait_for(
+            lkapi.room.list_participants(ListParticipantsRequest(room=room_name)),
+            timeout=PARTICIPANTS_PREVIEW_TIMEOUT,
+        )
+    except TwirpError as e:
+        if e.code == "not_found":
+            return {"count": 0, "participants": [], "available": True}
+        logger.warning("Could not list participants of room %s: %s", room_name, e)
+        return {"count": 0, "participants": [], "available": False}
+    except Exception:  # pylint: disable=broad-exception-caught  # noqa: BLE001
+        logger.warning("Could not list participants of room %s", room_name)
+        return {"count": 0, "participants": [], "available": False}
+    finally:
+        await lkapi.aclose()
+
+    participants = [
+        {"name": p.name or None, "color": p.attributes.get("color") or None}
+        for p in response.participants
+        if p.kind in visible_kinds
+        and not p.permission.hidden
+        and p.state != ParticipantInfo.State.DISCONNECTED
+    ]
+    return {"count": len(participants), "participants": participants, "available": True}
 
 
 class NotificationError(Exception):

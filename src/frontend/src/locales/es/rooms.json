@@ -94,6 +94,13 @@
     "timeoutInvite": {
       "title": "No puedes participar en esta llamada",
       "body": "Nadie ha respondido a tu solicitud de participación en la llamada"
+    },
+    "presence": {
+      "empty": "Todavía no hay nadie más",
+      "one": "{{name}} está en esta llamada",
+      "many_one": "{{name}} y {{count}} persona más están en esta llamada",
+      "many_other": "{{name}} y {{count}} personas más están en esta llamada",
+      "someone": "Alguien"
     }
   },
   "leaveRoomPrompt": "Volver al inicio hará que salgas de la reunión.",

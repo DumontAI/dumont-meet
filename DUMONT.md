@@ -7,7 +7,7 @@ Dumont's deployment of [LaSuite Meet](https://github.com/suitenumerique/meet) (D
 
 ## What the `dumont` branch changes
 
-Branding assets, the document head, and exactly one React component:
+Branding assets, the document head, a handful of React components, and one backend feature (pre-join presence, below):
 
 - `src/frontend/public/` favicons, apple-touch-icon, android-chrome icons, `favicon.ico`, `icon.png` — generated from `dumont_green_icon.png`
 - `src/frontend/public/assets/logo.svg` — the Dumont lockup, embedded, replaces the La Suite logo in the header
@@ -43,17 +43,46 @@ HTTPS** for lacking `workflow` scope, because upstream's own
 `.github/workflows` edits ride along. Push over SSH instead.
 
 Keeping the diff to assets means rebasing onto a new upstream tag is a fast-forward
-in practice. Do not start patching components: use the CSS file and the build arg.
+in practice. Prefer the CSS file and the build args over patching components; the presence feature below is the deliberate exception, because it needs backend data upstream does not expose.
+
+### Backend: pre-join presence (Dumont builds its own backend image)
+
+The pre-join screen shows who is already in the call ("Carlos Ferri and 2
+others are in this call", with initials), polled every 10s. Stock Meet has no
+API for this, so the backend is patched and is **no longer the stock image**:
+
+- `GET /api/v1.0/rooms/{id-or-slug}/participants-preview/` (`core/api/viewsets.py`)
+  returns `{"count", "participants": [{"name", "color"}], "available"}`. It is
+  gated by `Room.can_join_directly` (`core/models.py`), the same condition that
+  hands out the LiveKit token in `RoomSerializer`, so anyone bound for the lobby
+  gets a 403 and learns nothing. Identities never leave the backend; agents,
+  egress/recorders and hidden participants are filtered out
+  (`core/utils.py list_participants_preview`). A room LiveKit has not created
+  yet is empty; any LiveKit failure is a 200 with `available: false`.
+- Frontend: `src/frontend/src/features/rooms/components/ParticipantsPreview.tsx`,
+  rendered under the "Join the meeting?" heading in `Lobby.tsx`.
+
+Build the backend from this branch, from the repo root:
+
+```bash
+docker build -f Dockerfile --target backend-production \
+  --build-arg DOCKER_USER=1000 \
+  -t dumont/meet-backend:<upstream-tag>-dumont .
+```
+
+Every service in `/opt/meet` that runs `lasuite/meet-backend` (the API and any
+celery worker) must switch to that tag together.
 
 ## Upgrading
 
 1. `git fetch upstream --tags && git checkout main && git merge --ff-only upstream/main`
-2. Rebase `dumont` onto the new tag, rebuild the frontend image with the same build args
-3. Bump the backend image to the matching tag and run `manage.py migrate`
+2. Rebase `dumont` onto the new tag, rebuild the frontend and backend images with the commands above
+3. Deploy the new backend image and run `manage.py migrate`
 
-Backend runs the stock `lasuite/meet-backend` image: its branding is entirely
-env-driven (`DJANGO_EMAIL_BRAND_NAME`, `DJANGO_EMAIL_LOGO_IMG`), so there is
-nothing to fork.
+Backend branding is entirely env-driven (`DJANGO_EMAIL_BRAND_NAME`,
+`DJANGO_EMAIL_LOGO_IMG`), but the backend is no longer stock: the pre-join
+presence endpoint is a patch, so after a rebase rebuild the backend image with
+the command above instead of bumping `lasuite/meet-backend`.
 
 ## Deployment
 
