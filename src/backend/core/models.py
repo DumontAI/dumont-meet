@@ -476,6 +476,14 @@ class Room(Resource):
         """Check if a room is public"""
         return self.access_level == RoomAccessLevel.PUBLIC
 
+    def can_join_directly(self, user, role):
+        """Whether this user enters without the lobby (gets a LiveKit token)."""
+        return (
+            (self.access_level == RoomAccessLevel.TRUSTED and user.is_authenticated)
+            or role is not None
+            or self.is_public
+        )
+
     @staticmethod
     def generate_unique_pin_code(length):
         """Generate a unique n-digit PIN code"""

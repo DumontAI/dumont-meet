@@ -6,6 +6,7 @@ export const keys = {
   config: 'config',
   requestEntry: 'requestEntry',
   waitingParticipants: 'waitingParticipants',
+  participantsPreview: 'participantsPreview',
   roomCreationCallback: 'roomCreationCallback',
   files: 'files',
 }
