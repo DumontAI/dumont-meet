@@ -841,5 +841,6 @@
   },
   "participantTile": {
     "screenShare": "{{name}} scherm"
-  }
+  },
+  "reconnecting": "Opnieuw verbinden..."
 }
