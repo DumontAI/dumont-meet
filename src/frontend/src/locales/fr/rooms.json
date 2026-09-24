@@ -815,5 +815,6 @@
   },
   "participantTile": {
     "screenShare": "Écran de {{name}}"
-  }
+  },
+  "reconnecting": "Reconnexion..."
 }

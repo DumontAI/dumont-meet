@@ -8,6 +8,7 @@ import { Button } from '@/primitives'
 import { css } from '@/styled-system/css'
 import { StyledToastContainer } from './StyledToastContainer'
 import { useRoomContext } from '@livekit/components-react'
+import { reportError } from '@/features/analytics/telemetry'
 
 export function ToastConnectionQualityPoor({
   state,
@@ -22,9 +23,15 @@ export function ToastConnectionQualityPoor({
   const toast = props.toast
 
   const handleDismiss = async () => {
-    room.localParticipant
-      .setCameraEnabled(true)
-      .finally(() => state.close(toast.key))
+    try {
+      await room.localParticipant.setCameraEnabled(true)
+    } catch (error) {
+      reportError('device_switch_failure', error, {
+        at: 'ToastConnectionQualityPoor',
+      })
+    } finally {
+      state.close(toast.key)
+    }
   }
 
   return (
