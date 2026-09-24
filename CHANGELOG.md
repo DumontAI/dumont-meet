@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [Unreleased]
+
+### Added
+
+- ✨(frontend) keep the audio when the connection goes poor
+
 ## [1.33.0] - 2026-09-30
 
 ### Added

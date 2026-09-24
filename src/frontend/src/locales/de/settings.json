@@ -16,6 +16,10 @@
     "autoMuteLargeRoom": {
       "label": "Mikrofon automatisch stummschalten",
       "description": "Dein Mikrofon wird automatisch stummgeschaltet, wenn du an einer großen Besprechung teilnimmst."
+    },
+    "poorConnectionFallback": {
+      "label": "Kamera bei schlechter Verbindung ausschalten",
+      "description": "Schaltet deine Kamera automatisch aus, wenn die Verbindung zu instabil ist, damit das Audio weiter funktioniert. Du kannst sie jederzeit wieder einschalten."
     }
   },
   "audio": {

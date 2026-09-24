@@ -15,6 +15,15 @@ export const notifyAutoMutedOnJoin = () => {
   )
 }
 
+export const notifyConnectionDegraded = () => {
+  toastQueue.add(
+    {
+      type: NotificationType.ConnectionQualityPoor,
+    },
+    { timeout: NotificationDuration.ALERT }
+  )
+}
+
 export const showLowerHandToast = (
   participant: Participant,
   onClose: () => void

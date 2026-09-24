@@ -14,6 +14,7 @@ import { ToastRecordingSaving } from './ToastRecordingSaving'
 import { ToastPermissionsRemoved } from './ToastPermissionsRemoved'
 import { ToastRecordingRequest } from './ToastRecordingRequest'
 import { ToastAutoMuteLargeRoom } from './ToastAutoMuteLargeRoom'
+import { ToastConnectionQualityPoor } from './ToastConnectionQualityPoor'
 import { ToastRoleChanged } from '@/features/notifications/components/ToastRoleChanged'
 
 interface ToastRegionProps extends AriaToastRegionProps {
@@ -50,6 +51,15 @@ const renderToast = (
     case NotificationType.AutoMuteLargeRoom:
       return (
         <ToastAutoMuteLargeRoom key={toast.key} toast={toast} state={state} />
+      )
+
+    case NotificationType.ConnectionQualityPoor:
+      return (
+        <ToastConnectionQualityPoor
+          key={toast.key}
+          toast={toast}
+          state={state}
+        />
       )
 
     case NotificationType.TranscriptionStarted:
