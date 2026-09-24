@@ -16,6 +16,10 @@
     "autoMuteLargeRoom": {
       "label": "Silenciar automáticamente mi micrófono",
       "description": "Silencia automáticamente tu micrófono cuando te unes a una reunión numerosa."
+    },
+    "poorConnectionFallback": {
+      "label": "Desactivar mi cámara si la conexión es mala",
+      "description": "Desactiva tu cámara automáticamente cuando la conexión es demasiado inestable, para que el audio siga funcionando. Puedes volver a activarla cuando quieras."
     }
   },
   "audio": {

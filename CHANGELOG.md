@@ -8,6 +8,11 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(frontend) keep the audio when the connection goes poor
+- ✨(frontend) show a reconnecting notice while the room recovers
+
 ## [1.31.0] - 2026-09-08
 
 ### Added

@@ -62,5 +62,9 @@
       "member": "Member"
     }
   },
-  "openMenu": "Open menu"
+  "openMenu": "Open menu",
+  "connectionQualityPoor": {
+    "auto": "Your connection is unstable. Your camera has been turned off so the audio keeps working. You can turn it back on at any time.",
+    "camera": "Turn camera on"
+  }
 }
