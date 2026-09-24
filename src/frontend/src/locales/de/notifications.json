@@ -62,5 +62,9 @@
       "member": "Mitglied"
     }
   },
-  "openMenu": "Menü öffnen"
+  "openMenu": "Menü öffnen",
+  "connectionQualityPoor": {
+    "auto": "Deine Verbindung ist instabil. Deine Kamera wurde ausgeschaltet, damit das Audio weiter funktioniert. Du kannst sie jederzeit wieder einschalten.",
+    "camera": "Kamera einschalten"
+  }
 }

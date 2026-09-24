@@ -16,6 +16,10 @@
     "autoMuteLargeRoom": {
       "label": "Mijn microfoon automatisch dempen",
       "description": "Uw microfoon wordt automatisch gedempt wanneer u deelneemt aan een grote vergadering."
+    },
+    "poorConnectionFallback": {
+      "label": "Mijn camera uitschakelen bij een slechte verbinding",
+      "description": "Schakelt je camera automatisch uit als je verbinding te onstabiel is, zodat de audio blijft werken. Je kunt hem altijd weer aanzetten."
     }
   },
   "audio": {

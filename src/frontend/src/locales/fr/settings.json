@@ -16,6 +16,10 @@
     "autoMuteLargeRoom": {
       "label": "Couper automatiquement mon micro",
       "description": "Coupe automatiquement votre micro lorsque vous rejoignez une réunion de grande taille."
+    },
+    "poorConnectionFallback": {
+      "label": "Désactiver ma caméra en cas de mauvaise connexion",
+      "description": "Désactive automatiquement votre caméra lorsque votre connexion est trop instable, afin de préserver l'audio. Vous pouvez la réactiver à tout moment."
     }
   },
   "audio": {

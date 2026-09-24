@@ -12,6 +12,7 @@ import { SidePanel } from '../components/SidePanel'
 import { RecordingProvider } from '@/features/recording'
 import { ScreenShareErrorModal } from '../components/ScreenShareErrorModal'
 import { ConnectionObserver } from '../components/ConnectionObserver'
+import { PoorConnectionFallback } from '../components/PoorConnectionFallback'
 import { captureMediaEvent, reportError } from '@/features/analytics/telemetry'
 import { getOS } from '@/utils/os'
 import { isFireFox } from '@/utils/livekit'
@@ -117,6 +118,7 @@ export function VideoConference({ ...props }: VideoConferenceProps) {
     <>
       <RoomMetadataSynchronizer />
       <ConnectionObserver />
+      <PoorConnectionFallback />
       <SyncDevicePreferences />
       <RoomSilentMicDetector />
       <MediaStateObserver />

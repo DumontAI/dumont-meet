@@ -52,6 +52,22 @@ export const GeneralTab = ({ id }: GeneralTabProps) => {
           fullWidth: true,
         }}
       />
+      <Field
+        type="switch"
+        label={t('preferences.poorConnectionFallback.label')}
+        description={t('preferences.poorConnectionFallback.description')}
+        isSelected={
+          userPreferencesSnap.is_auto_degrade_on_poor_connection_enabled
+        }
+        onChange={(value) =>
+          (userPreferencesStore.is_auto_degrade_on_poor_connection_enabled =
+            value)
+        }
+        wrapperProps={{
+          noMargin: true,
+          fullWidth: true,
+        }}
+      />
     </TabPanel>
   )
 }

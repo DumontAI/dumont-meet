@@ -62,5 +62,9 @@
       "member": "Membre"
     }
   },
-  "openMenu": "Ouvrir le menu"
+  "openMenu": "Ouvrir le menu",
+  "connectionQualityPoor": {
+    "auto": "Votre connexion est instable. Votre caméra a été désactivée pour que l'audio continue de fonctionner. Vous pouvez la réactiver à tout moment.",
+    "camera": "Activer la caméra"
+  }
 }

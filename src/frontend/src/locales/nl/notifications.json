@@ -62,5 +62,9 @@
       "member": "Lid"
     }
   },
-  "openMenu": "Menu openen"
+  "openMenu": "Menu openen",
+  "connectionQualityPoor": {
+    "auto": "Je verbinding is onstabiel. Je camera is uitgeschakeld zodat de audio blijft werken. Je kunt hem altijd weer aanzetten.",
+    "camera": "Camera aanzetten"
+  }
 }

@@ -16,6 +16,10 @@
     "autoMuteLargeRoom": {
       "label": "Automatically mute my microphone",
       "description": "Automatically mute your microphone when joining a large meeting."
+    },
+    "poorConnectionFallback": {
+      "label": "Turn off my camera on a poor connection",
+      "description": "Automatically turns your camera off when your connection is too unstable, to keep the audio working. You can turn it back on at any time."
     }
   },
   "audio": {
