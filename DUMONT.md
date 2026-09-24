@@ -21,6 +21,7 @@ Branding assets, the document head, a handful of React components, and one backe
 - A "View" submenu in the in-call "..." menu (`controls/Options/ViewMenuItem.tsx`, `stores/viewPreferences.ts`, `StageLayout.tsx`): Automatic / Speaker / Gallery, Hide self view, Hide non-video participants, saved per browser
 - `site.webmanifest` adds `id`, `scope` and `launch_handler: navigate-new`. Chrome 139+ opens in-scope links in the installed app; navigate-new gives each link its own window so a second link never replaces a live call
 - Cherry-picked upstream `771f58c0` (waiting-room chime on every knock), because the lobby is now the default
+- `usePoorConnectionFallback` and `ReconnectNotice` handle a bad local connection in-call: see [Poor-connection fallback and reconnect notice](#poor-connection-fallback-and-reconnect-notice-2026-09-24)
 
 The app title comes from the stock build arg, not a patch:
 
@@ -305,3 +306,29 @@ and discarding the overflow until the speaker finally stops. Test clips need
 audible gaps between sentences: a 112s clip of continuous TTS produced one
 truncated caption after 60s, the same clip with 2.5s of silence every 28s
 produced a clean caption per sentence group.
+
+## Poor-connection fallback and reconnect notice (2026-09-24)
+
+Reports of "someone drops when there are many people" traced to client
+reconnects on weak networks: the more participants, the heavier the downlink,
+and LiveKit's layer thinning cannot help a connection that is failing on its
+uplink. Two additions handle the local connection itself.
+
+- `src/frontend/src/features/rooms/livekit/hooks/usePoorConnectionFallback.ts`:
+  local connection quality stuck on `Poor` for 15s turns the camera off and
+  raises `ToastConnectionQualityPoor`. It never turns the camera back on by
+  itself, so a flapping connection cannot make the video blink; the toast
+  offers one click back, and the behaviour sits behind the preference
+  `is_auto_degrade_on_poor_connection_enabled` (default on), next to the
+  auto-mute switch. Emits `connection_fallback_audio_only` for analytics.
+- `src/frontend/src/features/rooms/livekit/components/ReconnectNotice.tsx`: a
+  "Reconnecting..." pill while LiveKit is in `Reconnecting` or
+  `SignalReconnecting`, so a two-second hiccup does not read as a frozen call.
+
+Rebase surface: the two components, the hook, the `ConnectionQualityPoor`
+member in `NotificationType.ts`, its case in `ToastRegion.tsx`, the toast
+helper in `notifications/utils.ts`, the two mounts in
+`prefabs/VideoConference.tsx`, the switch in
+`settings/components/tabs/GeneralTab.tsx`, the store default, the
+`notifications`, `settings` and `rooms` keys in the five locales, and the
+CHANGELOG entries. Everything else is additive.
