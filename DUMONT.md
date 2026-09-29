@@ -22,6 +22,7 @@ Branding assets, the document head, a handful of React components, and one backe
 - `site.webmanifest` adds `id`, `scope` and `launch_handler: navigate-new`. Chrome 139+ opens in-scope links in the installed app; navigate-new gives each link its own window so a second link never replaces a live call
 - Cherry-picked upstream `771f58c0` (waiting-room chime on every knock), because the lobby is now the default
 - `usePoorConnectionFallback` and `ReconnectNotice` handle a bad local connection in-call: see [Poor-connection fallback and reconnect notice](#poor-connection-fallback-and-reconnect-notice-2026-09-24)
+- `Conference.tsx` sets `singlePeerConnection: false` and `ScreenShareToggle.tsx` caps the capture: see [Screen-share renegotiation drops the room](#screen-share-renegotiation-drops-the-room-2026-09-29)
 
 The app title comes from the stock build arg, not a patch:
 
@@ -332,3 +333,23 @@ helper in `notifications/utils.ts`, the two mounts in
 `settings/components/tabs/GeneralTab.tsx`, the store default, the
 `notifications`, `settings` and `rooms` keys in the five locales, and the
 CHANGELOG entries. Everything else is additive.
+
+## Screen-share renegotiation drops the room (2026-09-29)
+
+Sharing a screen used to drop every participant at once. The room ran on a
+single bundled PeerConnection (`singlePeerConnection` defaulted to true), and
+adding a screen-share track renegotiated that one connection, which the shared
+LiveKit SFU (v1.13.7, warp pion) turned into a room-wide
+`RR_SIGNAL_DISCONNECTED` storm. Two changes decouple and shrink the share:
+
+- `Conference.tsx` sets `singlePeerConnection: false`, so publishing and
+  subscribing use separate peer connections. A screen-share renegotiation
+  touches only the publisher connection; the downlink that renders everyone
+  else is no longer taken down with it.
+- `ScreenShareToggle.tsx` caps the capture at 1080p/15 with
+  `contentHint: detail` (on top of the existing `systemAudio: exclude`), so a
+  retina/high-DPI screen does not push a full-resolution stream through the
+  renegotiation path.
+
+Rebase surface: `Conference.tsx` room options and `ScreenShareToggle.tsx`
+capture options. Everything else is additive.
