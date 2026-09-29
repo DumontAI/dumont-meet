@@ -106,6 +106,10 @@ export const Conference = ({
     return {
       adaptiveStream: true,
       dynacast: true,
+      // Dumont: publish and subscribe on separate peer connections. On a bundled
+      // single connection, adding a screen-share track renegotiates the room and
+      // drops every participant (RR_SIGNAL_DISCONNECTED) on the shared SFU.
+      singlePeerConnection: false,
       publishDefaults: {
         videoCodec: 'vp9',
       },

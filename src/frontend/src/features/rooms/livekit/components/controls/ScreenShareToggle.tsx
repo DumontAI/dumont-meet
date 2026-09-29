@@ -35,6 +35,10 @@ export const ScreenShareToggle = ({
       // audio includes the call itself, and Chrome can suppress it locally,
       // which leaves the presenter unable to hear anyone. Tab audio still works.
       systemAudio: 'exclude',
+      // Dumont: cap the captured canvas so a retina/high-DPI share does not push
+      // a full-resolution stream through the renegotiation path.
+      resolution: { width: 1920, height: 1080, frameRate: 15 },
+      contentHint: 'detail',
     },
   })
 
