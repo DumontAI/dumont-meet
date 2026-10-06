@@ -7,7 +7,6 @@ import { UserAware } from '@/features/auth/components/UserAware'
 import { useUser } from '@/features/auth/api/useUser'
 import { JoinMeetingDialog } from '../components/JoinMeetingDialog'
 import { IntroSlider } from '../components/IntroSlider'
-import { HomePanel } from '../components/HomePanel'
 import { MoreLink } from '../components/MoreLink'
 import { CreateMeetingMenu } from '../components/CreateMeetingMenu'
 import { ReactNode, useEffect, useState } from 'react'
@@ -262,9 +261,11 @@ const Home = () => {
             <Separator />
             <MoreLink />
           </LeftColumn>
-          <RightColumn signedIn={!!isLoggedIn}>
-            {isLoggedIn ? <HomePanel /> : <IntroSlider />}
-          </RightColumn>
+          {!isLoggedIn && (
+            <RightColumn>
+              <IntroSlider />
+            </RightColumn>
+          )}
         </Columns>
       </Screen>
     </UserAware>
