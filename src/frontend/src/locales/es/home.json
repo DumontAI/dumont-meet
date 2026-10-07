@@ -69,12 +69,10 @@
       "title": "Tus salas",
       "empty": "Aún no tienes salas guardadas. Crea una reunión para más tarde y quedará aquí, lista para reutilizarla.",
       "copy": "Copiar el enlace de {{name}}",
-      "copied": "Enlace copiado"
-    },
-    "recordings": {
-      "title": "Grabaciones recientes",
-      "empty": "Aún no hay grabaciones. Inicia una grabación durante una reunión y aparecerá aquí cuando esté lista.",
-      "unknownRoom": "Sala eliminada"
+      "copied": "Enlace copiado",
+      "rename": "Cambiar nombre",
+      "renameSave": "Guardar nombre",
+      "renameCancel": "Cancelar"
     }
   },
   "signedInHeading": "Iniciar o unirse a una reunion"

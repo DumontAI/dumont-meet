@@ -69,12 +69,10 @@
       "title": "Jouw ruimtes",
       "empty": "Nog geen opgeslagen ruimtes. Maak een vergadering voor later, dan blijft die hier staan om opnieuw te gebruiken.",
       "copy": "Kopieer de link naar {{name}}",
-      "copied": "Link gekopieerd"
-    },
-    "recordings": {
-      "title": "Recente opnames",
-      "empty": "Nog geen opnames. Start een opname tijdens een vergadering, dan verschijnt die hier zodra ze klaar is.",
-      "unknownRoom": "Verwijderde ruimte"
+      "copied": "Link gekopieerd",
+      "rename": "Naam wijzigen",
+      "renameSave": "Naam opslaan",
+      "renameCancel": "Annuleren"
     }
   },
   "signedInHeading": "Een vergadering starten of eraan deelnemen"
