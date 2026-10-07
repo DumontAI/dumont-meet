@@ -111,7 +111,7 @@ export const Conference = ({
       // drops every participant (RR_SIGNAL_DISCONNECTED) on the shared SFU.
       singlePeerConnection: false,
       publishDefaults: {
-        videoCodec: 'vp9',
+        videoCodec: apiConfig?.livekit.default_video_codec ?? 'vp9',
       },
       videoCaptureDefaults: {
         deviceId: userConfig.videoDeviceId ?? undefined,
@@ -133,6 +133,7 @@ export const Conference = ({
     userConfig.videoPublishResolution,
     userConfig.audioDeviceId,
     userConfig.audioOutputDeviceId,
+    apiConfig?.livekit.default_video_codec,
   ])
 
   const room = useMemo(() => new Room(roomOptions), [roomOptions])

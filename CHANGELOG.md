@@ -8,10 +8,83 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [Unreleased]
+
 ### Added
 
 - ✨(frontend) keep the audio when the connection goes poor
 - ✨(frontend) show a reconnecting notice while the room recovers
+
+## [1.33.0] - 2026-09-30
+
+### Added
+
+- ✨(backend) purge rooms inactive for a configurable period
+- 🔨(makefile) add targets to list and download files stored in Garage
+
+### Changed
+
+- ⬆️(backend) update python dependencies
+- ⬆️(summary) update python dependencies
+- ⬆️(agents) update python dependencies
+- ♻️(agents) replace the minio client by boto3
+- 🔧(compose) replace MinIO by Garage for local development
+- 🔧(helm) point media services to Garage by default
+
+### Fixed
+
+- 🔒️(backend) fix critical and high CVEs in PyJWT
+- ⚡️(frontend) disable posthog-js periodic feature flag reloads
+
+## [1.32.1] - 2026-09-25
+
+### Fixed
+
+- 🔒️(backend) fix CVE-2026-73228 and CVE-2026-73229 in drf
+- 🔒️(agent) fix CRITICAL CVE-2026-63072 / CVE-2026-63073 in libssl3t64
+
+## [1.32.0] - 2026-09-25
+
+### Added
+
+- ✨(backend) make the LiveKit default video codec configurable
+- 🔧(dev) add support for Bureautix workstations
+- ✨(frontend) add screen share zoom controls #1498
+
+### Changed
+
+- 🔥(backend) remove unused API viewset and permission helpers
+- 🔊(backend) pin the dockerflow logger level to WARNING
+- 🚑️(summary) serve health endpoints with the dockerflow router
+- ♻️(backend) serve the dockerflow views early in the middleware stack
+- 📈(frontend) include LiveKit SIDs in the connection analytics event
+- 🔇(backend) silence expected 401 warnings on /me
+- 🔇(backend) silence noisy request summary info logs
+- ⚡️(frontend) defer loading the Crisp script until idle
+- ⬆️(frontend) upgrade react-i18next from 17.0.10 to 17.0.12
+- ⬆️(frontend) upgrade posthog-js from 1.414.0 to 1.418.10
+- ⬆️(addons) upgrade i18next from 26.3.6 to 26.4.0
+- ⬆️(frontend) upgrade humanize-duration from 3.33.2 to 3.34.1
+- ⬆️(addons) upgrade i18next from 26.4.0 to 26.4.2
+- 🔖(helm) release chart 0.0.28
+- ♻️(backend) decouple recording event handling from LiveKit egress statuses
+
+### Fixed
+
+- 🐛(helm) probe liveness on __lbheartbeat__ and readiness on __heartbeat__
+- 🐛(helm) render periodSeconds and failureThreshold on probes
+- 🐛(backend) report the app release to Sentry instead of "NA"
+- 🐛(frontend) play the waiting room notification sound on every arrival
+- 🐛(frontend) apply saved reception resolution when joining a meeting #1714
+- 🐛(backend) acknowledge unknown LiveKit webhook events instead of 422
+- 🔒️(backend) enforce display name setting on rename API
+- 🔒️(backend) reject inactive users in resource server backend
+- 🐛(frontend) fix file permissions in the Docker image
+- 🚸(frontend) inform user that recording waits until a track is published
+- 🔒(backend) upgrade base image to python:3.13.5-alpine3.24
+- 🐛(backend) handle failed and aborted egresses
+- 🩹(frontend) notify participants when a recording fails or is aborted
+- 🔒️(frontend) fix HIGH CVE-2026-93990 in libexpat
 
 ## [1.31.0] - 2026-09-08
 
