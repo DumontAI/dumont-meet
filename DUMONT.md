@@ -97,6 +97,18 @@ the command above instead of bumping `lasuite/meet-backend`.
 `/opt/meet` on airbase-hel1. See the `dumont-meet-deployment` note for the
 LiveKit sharing constraints.
 
+All three images (backend, frontend, transcriber) build with one command:
+
+```bash
+deploy/meet/build.sh <tag>   # e.g. v1.33.0-dumont-1
+```
+
+It carries the frontend build args (`VITE_APP_TITLE="Dumont Meet"`,
+`VITE_APP_WORDMARK="Meet"`, `VITE_APP_RECORDING_TRANSCRIPT=false`) so they do not
+drift from memory, and prints the compose tag bump and migrate steps. Run it on
+hel1 from a checkout or copy of the branch: the images are local, there is no
+registry.
+
 ## Waiting room by default (2026-09-18)
 
 Rooms are `trusted`, not `public`: the 7 people with a Meet account walk in,
