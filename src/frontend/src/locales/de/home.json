@@ -69,12 +69,10 @@
       "title": "Deine Räume",
       "empty": "Noch keine gespeicherten Räume. Erstelle ein Meeting für später, dann bleibt es hier und kann wiederverwendet werden.",
       "copy": "Link zu {{name}} kopieren",
-      "copied": "Link kopiert"
-    },
-    "recordings": {
-      "title": "Neueste Aufzeichnungen",
-      "empty": "Noch keine Aufzeichnungen. Starte eine Aufzeichnung in einem Meeting, dann erscheint sie hier, sobald sie fertig ist.",
-      "unknownRoom": "Gelöschter Raum"
+      "copied": "Link kopiert",
+      "rename": "Umbenennen",
+      "renameSave": "Namen speichern",
+      "renameCancel": "Abbrechen"
     }
   },
   "signedInHeading": "Meeting starten oder beitreten"

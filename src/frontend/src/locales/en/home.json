@@ -69,12 +69,10 @@
       "title": "Your rooms",
       "empty": "No saved rooms yet. Create a meeting for a later date and it will be kept here, ready to reuse.",
       "copy": "Copy the link to {{name}}",
-      "copied": "Link copied"
-    },
-    "recordings": {
-      "title": "Recent recordings",
-      "empty": "No recordings yet. Start a recording during a meeting and it will show up here once it is ready.",
-      "unknownRoom": "Deleted room"
+      "copied": "Link copied",
+      "rename": "Rename",
+      "renameSave": "Save name",
+      "renameCancel": "Cancel"
     }
   },
   "signedInHeading": "Start or join a meeting"

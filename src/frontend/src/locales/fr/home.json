@@ -69,12 +69,10 @@
       "title": "Vos salles",
       "empty": "Aucune salle enregistrée pour l'instant. Créez une réunion pour une date ultérieure : elle restera ici, prête à être réutilisée.",
       "copy": "Copier le lien de {{name}}",
-      "copied": "Lien copié"
-    },
-    "recordings": {
-      "title": "Enregistrements récents",
-      "empty": "Aucun enregistrement pour l'instant. Lancez un enregistrement pendant une réunion : il apparaîtra ici une fois prêt.",
-      "unknownRoom": "Salle supprimée"
+      "copied": "Lien copié",
+      "rename": "Renommer",
+      "renameSave": "Enregistrer le nom",
+      "renameCancel": "Annuler"
     }
   },
   "signedInHeading": "Demarrer ou rejoindre une reunion"

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchApi } from '@/api/fetchApi'
 import { keys } from '@/api/queryKeys'
 import { useUser } from '@/features/auth/api/useUser'
@@ -29,5 +29,24 @@ export const useListMyRooms = (params: Parameters<typeof listMyRooms>[0]) => {
     queryFn: () => listMyRooms(params),
     retry: false,
     enabled: isLoggedIn === true,
+  })
+}
+
+/**
+ * Rename a room. Names defaulted to the random slug at creation; this lets the
+ * owner give a meeting a title that reads on the home instead of a code.
+ */
+export const renameRoom = ({ slug, name }: { slug: string; name: string }) =>
+  fetchApi<ApiRoom>(`rooms/${slug}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ name }),
+  })
+
+export const useRenameRoom = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: renameRoom,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: [keys.rooms] }),
   })
 }

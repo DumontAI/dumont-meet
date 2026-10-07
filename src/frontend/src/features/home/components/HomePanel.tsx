@@ -1,39 +1,21 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as WouterLink } from 'wouter'
 import {
   RiCheckLine,
+  RiCloseLine,
   RiFileCopyLine,
-  RiFilmLine,
-  RiPlayCircleLine,
+  RiPencilLine,
   RiVideoChatLine,
 } from '@remixicon/react'
 import { css } from '@/styled-system/css'
-import { Button, Text } from '@/primitives'
+import { Button, Input, Text } from '@/primitives'
 import { getRoutePath } from '@/navigation/getRoutePath'
 import { type ApiRoom } from '@/features/rooms/api/ApiRoom'
-import { useListMyRooms } from '@/features/rooms/api/listRooms'
+import { useListMyRooms, useRenameRoom } from '@/features/rooms/api/listRooms'
 import { useCopyRoomToClipboard } from '@/features/rooms/livekit/hooks/useCopyRoomToClipboard'
-import { useListMyRecordings } from '@/features/recording/api/listRecordings'
-import { type RecordingApi } from '@/features/recording/api/fetchRecording'
-import { RecordingStatus } from '@/features/recording'
 
 const MAX_ITEMS = 5
-// Recordings are listed newest first, all statuses mixed, so we over-fetch a
-// little and keep the first downloadable ones.
-const RECORDINGS_PAGE_SIZE = 20
-
-// A finished recording does not stop at "saved": the backend advances it again
-// once the owner has been notified, so the happy path ends at
-// notification_succeeded and filtering on "saved" alone hides every completed
-// recording. This is the same set the download route treats as retrievable.
-const DOWNLOADABLE_STATUSES = new Set<string>([
-  RecordingStatus.Saved,
-  RecordingStatus.NotificationSucceed,
-  RecordingStatus.FailedToStop,
-  RecordingStatus.ExternalProcessSuccessful,
-  RecordingStatus.ExternalProcessFailed,
-])
 
 const listStyle = css({
   display: 'flex',
@@ -89,9 +71,13 @@ const rowTitleStyle = css({
   whiteSpace: 'nowrap',
 })
 
-const rowMetaStyle = css({
-  fontSize: '0.8125rem',
-  color: 'greyscale.600',
+const editRowStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.25rem',
+  flex: 1,
+  minWidth: 0,
+  padding: '0.25rem 0.25rem 0.25rem 0.625rem',
 })
 
 const Panel = ({ children }: { children?: ReactNode }) => (
@@ -199,9 +185,65 @@ const RoomRow = ({ room }: { room: ApiRoom }) => {
   const { t } = useTranslation('home', { keyPrefix: 'panel.rooms' })
   const { isRoomUrlCopied, copyRoomUrlToClipboard } =
     useCopyRoomToClipboard(room)
+  const { mutate: rename, isPending } = useRenameRoom()
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState(room.name || room.slug)
 
   const name = room.name || room.slug
   const copyLabel = isRoomUrlCopied ? t('copied') : t('copy', { name })
+
+  const submit = () => {
+    const next = draft.trim()
+    if (next && next !== name) {
+      rename({ slug: room.slug, name: next })
+    }
+    setIsEditing(false)
+  }
+
+  if (isEditing) {
+    return (
+      <li className={rowStyle}>
+        <form
+          className={editRowStyle}
+          onSubmit={(event) => {
+            event.preventDefault()
+            submit()
+          }}
+        >
+          <Input
+            aria-label={t('rename')}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            autoFocus
+            maxLength={255}
+          />
+          <Button
+            variant="tertiaryText"
+            square
+            size="sm"
+            onPress={submit}
+            isDisabled={isPending || draft.trim() === ''}
+            aria-label={t('renameSave')}
+          >
+            <RiCheckLine size={18} aria-hidden="true" />
+          </Button>
+          <Button
+            variant="tertiaryText"
+            square
+            size="sm"
+            onPress={() => {
+              setDraft(name)
+              setIsEditing(false)
+            }}
+            aria-label={t('renameCancel')}
+          >
+            <RiCloseLine size={18} aria-hidden="true" />
+          </Button>
+        </form>
+      </li>
+    )
+  }
 
   return (
     <li className={rowStyle}>
@@ -217,6 +259,19 @@ const RoomRow = ({ room }: { room: ApiRoom }) => {
         <span className={rowTitleStyle}>{name}</span>
       </WouterLink>
       <Button
+        variant="tertiaryText"
+        square
+        size="sm"
+        onPress={() => {
+          setDraft(name)
+          setIsEditing(true)
+        }}
+        aria-label={t('rename')}
+        tooltip={t('rename')}
+      >
+        <RiPencilLine size={18} aria-hidden="true" />
+      </Button>
+      <Button
         variant={isRoomUrlCopied ? 'success' : 'tertiaryText'}
         square
         size="sm"
@@ -230,48 +285,6 @@ const RoomRow = ({ room }: { room: ApiRoom }) => {
           <RiFileCopyLine size={18} aria-hidden="true" />
         )}
       </Button>
-    </li>
-  )
-}
-
-const RecordingRow = ({ recording }: { recording: RecordingApi }) => {
-  const { t, i18n } = useTranslation('home', { keyPrefix: 'panel.recordings' })
-
-  const date = new Date(recording.created_at)
-  const isValidDate = !isNaN(date.getTime())
-
-  return (
-    <li className={rowStyle}>
-      <WouterLink
-        to={String(getRoutePath('recordingDownload', recording.id))}
-        className={rowLinkStyle}
-      >
-        <RiPlayCircleLine
-          size={18}
-          aria-hidden="true"
-          className={rowIconStyle}
-        />
-        <span
-          className={css({
-            display: 'flex',
-            flexDirection: 'column',
-            minWidth: 0,
-          })}
-        >
-          <span className={rowTitleStyle}>
-            {recording.room?.name || t('unknownRoom')}
-          </span>
-          {isValidDate && (
-            <time className={rowMetaStyle} dateTime={recording.created_at}>
-              {date.toLocaleDateString(i18n.language, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })}
-            </time>
-          )}
-        </span>
-      </WouterLink>
     </li>
   )
 }
@@ -306,45 +319,11 @@ const RoomsSection = () => {
   )
 }
 
-const RecordingsSection = () => {
-  const { t } = useTranslation('home', { keyPrefix: 'panel' })
-  const { data, isLoading, isError, refetch } = useListMyRecordings({
-    pageSize: RECORDINGS_PAGE_SIZE,
-  })
-
-  const recordings =
-    data?.results
-      ?.filter((recording) => DOWNLOADABLE_STATUSES.has(recording.status))
-      .slice(0, MAX_ITEMS) ?? []
-
-  return (
-    <Section
-      title={t('recordings.title')}
-      icon={<RiFilmLine size={16} aria-hidden="true" />}
-    >
-      {isLoading ? (
-        <SectionLoading label={t('loading')} />
-      ) : isError ? (
-        <SectionError onRetry={() => refetch()} />
-      ) : recordings.length === 0 ? (
-        <SectionMessage>{t('recordings.empty')}</SectionMessage>
-      ) : (
-        <ul className={listStyle}>
-          {recordings.map((recording) => (
-            <RecordingRow key={recording.id} recording={recording} />
-          ))}
-        </ul>
-      )}
-    </Section>
-  )
-}
-
 /**
- * Signed-in launchpad panel: the user's rooms and their recent recordings.
+ * Signed-in launchpad panel: the user's rooms, by name.
  */
 export const HomePanel = () => (
   <Panel>
     <RoomsSection />
-    <RecordingsSection />
   </Panel>
 )
