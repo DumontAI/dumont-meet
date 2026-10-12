@@ -11,6 +11,7 @@ import { DisconnectReason, RoomEvent } from 'livekit-client'
 import { userPreferencesStore } from '@/stores/userPreferences'
 
 import { captureEvent, captureMediaEvent } from '@/features/analytics/telemetry'
+import { onReconnectMediaReport } from '../hooks/reconnectMediaGuard'
 import { connectionObserverStore } from '@/stores/connectionObserver'
 
 export const ConnectionObserver = () => {
@@ -122,6 +123,10 @@ export const ConnectionObserver = () => {
       })
     }
 
+    const stopReportingMedia = onReconnectMediaReport((report) => {
+      captureEvent('reconnect_media_state', report)
+    })
+
     room.on(RoomEvent.Connected, handleConnection)
     room.on(RoomEvent.SignalConnected, handleSignalingConnect)
     room.on(RoomEvent.Disconnected, handleDisconnect)
@@ -130,6 +135,7 @@ export const ConnectionObserver = () => {
     room.on(RoomEvent.SignalReconnecting, handleSignalingReconnect)
 
     return () => {
+      stopReportingMedia()
       room.off(RoomEvent.Connected, handleConnection)
       room.off(RoomEvent.SignalConnected, handleSignalingConnect)
       room.off(RoomEvent.Disconnected, handleDisconnect)

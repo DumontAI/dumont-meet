@@ -72,5 +72,7 @@
   "connectionQualityPoor": {
     "auto": "Deine Verbindung ist instabil. Deine Kamera wurde ausgeschaltet, damit das Audio weiter funktioniert. Du kannst sie jederzeit wieder einschalten.",
     "camera": "Kamera einschalten"
-  }
+  },
+  "screenShareLostOnReconnect": "Deine Bildschirmfreigabe wurde beendet, als die Verbindung unterbrochen wurde. Gib deinen Bildschirm erneut frei.",
+  "microphoneLostOnReconnect": "Dein Mikrofon erreicht die anderen nach dem Verbindungsabbruch nicht mehr. Überprüfe dein Mikrofon."
 }

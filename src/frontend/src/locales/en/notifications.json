@@ -72,5 +72,7 @@
   "connectionQualityPoor": {
     "auto": "Your connection is unstable. Your camera has been turned off so the audio keeps working. You can turn it back on at any time.",
     "camera": "Turn camera on"
-  }
+  },
+  "screenShareLostOnReconnect": "Your screen share stopped when the connection dropped. Share your screen again.",
+  "microphoneLostOnReconnect": "Your microphone stopped reaching others after the connection dropped. Check your microphone."
 }

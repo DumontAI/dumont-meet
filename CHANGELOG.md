@@ -14,6 +14,7 @@ and this project adheres to
 
 - ✨(frontend) keep the audio when the connection goes poor
 - ✨(frontend) show a reconnecting notice while the room recovers
+- ✨(frontend) warn when a reconnection drops the screen share or the microphone
 
 ## [1.33.0] - 2026-09-30
 

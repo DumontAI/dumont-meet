@@ -14,6 +14,7 @@ import { ScreenShareErrorModal } from '../components/ScreenShareErrorModal'
 import { ConnectionObserver } from '../components/ConnectionObserver'
 import { PoorConnectionFallback } from '../components/PoorConnectionFallback'
 import { ReconnectNotice } from '../components/ReconnectNotice'
+import { ReconnectMediaGuard } from '../components/ReconnectMediaGuard'
 import { captureMediaEvent, reportError } from '@/features/analytics/telemetry'
 import { getOS } from '@/utils/os'
 import { isFireFox } from '@/utils/livekit'
@@ -121,6 +122,7 @@ export function VideoConference({ ...props }: VideoConferenceProps) {
       <ConnectionObserver />
       <PoorConnectionFallback />
       <ReconnectNotice />
+      <ReconnectMediaGuard />
       <SyncDevicePreferences />
       <RoomSilentMicDetector />
       <MediaStateObserver />

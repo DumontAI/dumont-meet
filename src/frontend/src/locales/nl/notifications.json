@@ -72,5 +72,7 @@
   "connectionQualityPoor": {
     "auto": "Je verbinding is onstabiel. Je camera is uitgeschakeld zodat de audio blijft werken. Je kunt hem altijd weer aanzetten.",
     "camera": "Camera aanzetten"
-  }
+  },
+  "screenShareLostOnReconnect": "Je schermdeling is gestopt toen de verbinding wegviel. Deel je scherm opnieuw.",
+  "microphoneLostOnReconnect": "Je microfoon bereikt anderen niet meer nadat de verbinding wegviel. Controleer je microfoon."
 }
