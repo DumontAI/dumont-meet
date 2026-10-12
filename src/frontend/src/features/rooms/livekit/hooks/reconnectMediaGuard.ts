@@ -37,12 +37,19 @@ export type ReconnectMediaReport = {
 export const isMicBroken = (state: MediaState) =>
   !state.micPublished || state.micMuted || state.micUpstreamPaused
 
+// Retrying means setMicrophoneEnabled(true), which also unmutes. So it only
+// runs when there is no publication or the upstream is paused and the user has
+// not muted: a published-but-muted mic is never touched, only reported.
 export const decideReconnectActions = (
   snapshot: MediaSnapshot,
   state: MediaState
 ) => ({
   notifyScreenShareLost: snapshot.hadScreenShare && !state.screenShareEnabled,
-  retryMic: snapshot.micWanted && isMicBroken(state),
+  retryMic:
+    snapshot.micWanted &&
+    !state.micMuted &&
+    (!state.micPublished || state.micUpstreamPaused),
+  notifyMicMuted: snapshot.micWanted && state.micPublished && state.micMuted,
 })
 
 type Listener = (...args: unknown[]) => void
@@ -133,6 +140,7 @@ export const attachReconnectMediaGuard = (room: GuardRoom, deps: GuardDeps) => {
     if (actions.notifyScreenShareLost) deps.notifyScreenShareLost()
 
     let micRetried = false
+    if (actions.notifyMicMuted) deps.notifyMicrophoneLost()
     if (actions.retryMic) {
       micRetried = true
       try {

@@ -92,7 +92,7 @@ test('2a. mic unpublished: one retry, toast only if it stays broken', async () =
 test('2b. mic comes back after the retry: no toast', async () => {
   const t = setup({ share: false, mic: GOOD })
   t.emit('reconnecting')
-  t.s.mic = { isMuted: true, paused: false }
+  t.s.mic = null
   t.s.micAfterRetry = GOOD
   t.emit('reconnected')
   await t.settle()
@@ -107,6 +107,17 @@ test('2c. upstream paused counts as broken', async () => {
   t.emit('reconnected')
   await t.settle()
   assert.equal(t.calls.setMic, 1)
+  assert.equal(t.toasts.mic, 1)
+})
+
+test('3b. mic muted by the user after the drop: never unmuted, one toast', async () => {
+  const t = setup({ share: false, mic: GOOD })
+  t.emit('reconnecting')
+  t.s.mic = { isMuted: true, paused: false }
+  t.s.micAfterRetry = GOOD
+  t.emit('reconnected')
+  await t.settle()
+  assert.equal(t.calls.setMic, 0)
   assert.equal(t.toasts.mic, 1)
 })
 

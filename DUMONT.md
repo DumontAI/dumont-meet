@@ -354,7 +354,10 @@ the microphone could stay unpublished or muted for minutes while the person kept
 talking. The guard snapshots the screen-share and mic state on
 `Reconnecting`/`SignalReconnecting`, waits 3s after `Reconnected`, then toasts
 if the share is gone and retries `setMicrophoneEnabled(true)` once (toast if
-still broken). It never republishes the share (needs a user gesture) and never
+still broken), but only when the mic has no publication or its upstream is
+paused. A published-but-muted mic gets the toast and no call, so the guard
+never unmutes anyone, including someone who muted on purpose right after the
+drop. It never republishes the share (needs a user gesture) and never
 unmutes a mic that was muted before the drop. Emits `reconnect_media_state`.
 Investigation: `tasks/meet-screenshare-drop.md`.
 
