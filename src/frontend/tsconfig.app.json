@@ -27,5 +27,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "@types"]
+  "include": ["src", "@types"],
+  "exclude": ["src/**/*.test.ts"]
 }
