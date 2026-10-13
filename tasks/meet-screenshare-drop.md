@@ -89,3 +89,78 @@ publicar. Se a pessoa não perceber, continua falando sem ninguém ouvir.
 
 Primeiro o item 1 (maior efeito, risco baixo, reversível). Depois o 2. Depois
 o 3 e o 4 juntos, num PR no `dumont`, e o DUMONT.md na mesma mudança.
+
+## Estado (12/10/2026)
+
+Nada subiu. PR, merge, deploy e mudança no hel1 esperam o teste e o OK do
+usuário. Antes de qualquer reload do Caddy ou deploy do Meet no hel1,
+confirmar que não há sala ativa (o LiveKit atende Meet e Moveezi):
+
+```sh
+ssh airbase-hel1 'K=$(docker exec meet-backend-1 printenv LIVEKIT_API_KEY); S=$(docker exec meet-backend-1 printenv LIVEKIT_API_SECRET); docker run --rm --network host livekit/livekit-cli:latest room list --url http://127.0.0.1:7880 --api-key "$K" --api-secret "$S"'
+```
+
+Tabela vazia → pode aplicar.
+
+| Item | Onde | Estado |
+|---|---|---|
+| 1 Caddy `stream_close_delay 4h` | `hel1:/tmp/Caddyfile.scd.new` (4 `reverse_proxy :7880`) | `caddy validate` EXIT=0; não aplicado. Refazer o diff contra o live na hora; depois re-sync de `dumont-ops/hel1/caddy` |
+| 2a Moveezi lib sem reload no-op | `fix/caddy-skip-noop-reload` (a123d5fe4, 930883475) | `node --test deploy/caddy/*.test.mjs` EXIT=0 (55 pass); testes novos falham contra a lib antiga |
+| 2b Shipeezi lib sem reload no-op | `fix/caddy-skip-noop-reload` (8c9dab9a, 7ff673f0, 8528d82d) | `node --test scripts/caddy-*.test.mjs` EXIT=0 |
+| 3+5 Meet guard + telemetria | `fix/meet-reconnect-notices` | `vitest` 9/9 EXIT=0, `npm run build` EXIT=0, eslint dos arquivos tocados EXIT=0 |
+| 4 Causa B | — | falta reproduzir num Mac com log debug |
+
+Decisão: o guard nunca desmuta. O retry do mic (`setMicrophoneEnabled(true)`,
+uma vez) só entra com mic sem publicação ou upstream pausado; mic publicado e
+mudo recebe só o toast.
+
+`npm run lint` / `npm run check` completos falham em arquivos fora do escopo,
+já quebrados no `dumont` (`HomePanel.tsx:218` no-autofocus,
+`rooms/api/listRooms.ts` prettier). Não mexidos.
+
+Rollout, sempre com sala vazia: (1) Caddy, provado com sala de teste de 2
+pessoas + `reload caddy` sem "resuming RTC session"; (2) PRs moveezi e
+shipeezi para `staging`, merge commit (Moveezi: CI do GitHub no PR normal);
+(3) `deploy/meet/build.sh v1.33.0-dumont-2` no hel1 e troca da tag do
+frontend em `/opt/meet/compose.yaml`; (4) causa B.
+
+Agentes (A/B Sonnet 5.5): análise inicial 1 + 1 SendMessage; Meet 1 + 1
+correção por SendMessage; caddy-lib 1 sem retrabalho; revisor independente 1
+(Meet, diff > 200 linhas). Nenhum refeito em Opus.
+
+### Revisão independente (Sonnet 5.5, 12/10) e correções
+
+Nenhum achado bloqueava. Corrigidos por mim:
+- 1 e 4: toast falso quando o usuário muta ou para o share. Agora o guard
+  ouve o `TrackMuted` do mic local (o SDK nunca muta sozinho) e o
+  `LocalTrackUnpublished` do share durante os 3s de espera (o SDK já
+  republicou antes de emitir `Reconnected`).
+- 2: o retry do mic não roda se houve mute do usuário. O resto da janela
+  dentro do `setMicrophoneEnabled` (o `await republishPromise`) já está
+  resolvido no `Reconnected`.
+- 3: a snapshot só é descartada quando a verificação termina, então uma
+  segunda queda durante a espera mantém a primeira.
+- 5, 9: testes de unmount, de disconnect e de cancelamento por queda dupla.
+- 8: script `npm test` (`node --test 'src/**/*.test.ts'`).
+
+Provas:
+- `npm test`: 17/17, EXIT=0.
+- Os testes novos rodados contra o guard antigo: 4 falham (mute na espera,
+  mute no reconnecting, stop share na espera, queda dupla).
+- `npm run build` EXIT=0.
+- eslint em `features/rooms/livekit` EXIT=0.
+- prettier nos arquivos do guard EXIT=0.
+
+Ignorados, com motivo:
+- 4, parte da fase de `Reconnecting`: parar o share com a reconexão em curso
+  é ambíguo, porque o SDK também despublica nessa fase. É raro, e o custo é
+  um toast a mais.
+- 7: publicação sem track. Depois de um unpublish a publicação some do mapa;
+  não aparece nos logs.
+- 8, CI: o job `lint-front` usa o node do runner sem `setup-node` e já
+  falha por lint pré-existente. Ligar `npm test` no CI fica para quando o
+  lint do fork estiver verde. Os testes também ficam fora do `tsc -b`.
+- 10: o texto do toast do mic agora só aparece quando o mute não foi do
+  usuário, e "Check your microphone" serve.
+- 11: dedupe de toast em quedas seguidas. Com a snapshot única, sai no
+  máximo um toast por verificação concluída.
