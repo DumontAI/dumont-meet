@@ -39,21 +39,31 @@ const makeRoom = (init: { share: boolean; mic: Mic }) => {
       },
     },
   } as unknown as GuardRoom
-  const emit = (e: string) => handlers.get(e)?.forEach((l) => l())
+  const emit = (e: string, ...args: unknown[]) =>
+    handlers.get(e)?.forEach((l) => l(...args))
   return { room, s, calls, emit }
 }
 
-const setup = (init: { share: boolean; mic: Mic }) => {
+const setup = (
+  init: { share: boolean; mic: Mic },
+  opts: { gatedSleep?: boolean } = {}
+) => {
   const r = makeRoom(init)
   const toasts = { share: 0, mic: 0 }
-  attachReconnectMediaGuard(r.room, {
+  // With gatedSleep, each sleep waits until wake() so a test can act during
+  // the settle wait.
+  const sleepers: (() => void)[] = []
+  const wake = () => sleepers.splice(0).forEach((resolve) => resolve())
+  const detach = attachReconnectMediaGuard(r.room, {
     notifyScreenShareLost: () => toasts.share++,
     notifyMicrophoneLost: () => toasts.mic++,
-    sleep: async () => {},
+    sleep: opts.gatedSleep
+      ? () => new Promise<void>((resolve) => sleepers.push(resolve))
+      : async () => {},
   })
   // Let the async handler run to completion.
   const settle = () => new Promise((resolve) => setImmediate(resolve))
-  return { ...r, toasts, settle }
+  return { ...r, toasts, settle, wake, detach }
 }
 
 const GOOD: Mic = { isMuted: false, paused: false }
@@ -144,4 +154,99 @@ test('reconnected without a prior drop is ignored', async () => {
   t.emit('reconnected')
   await t.settle()
   assert.equal(t.toasts.mic + t.toasts.share + t.calls.setMic, 0)
+})
+
+const micPub = { source: 'microphone' }
+const sharePub = { source: 'screen_share' }
+
+test('5. user mutes during the settle wait: no retry, no toast', async () => {
+  const t = setup({ share: false, mic: GOOD }, { gatedSleep: true })
+  t.emit('reconnecting')
+  t.emit('reconnected')
+  t.s.mic = { isMuted: true, paused: false }
+  t.emit('trackMuted', micPub, t.room.localParticipant)
+  t.wake()
+  await t.settle()
+  assert.equal(t.calls.setMic, 0)
+  assert.equal(t.toasts.mic, 0)
+})
+
+test('5b. user mutes while reconnecting: no toast', async () => {
+  const t = setup({ share: false, mic: GOOD })
+  t.emit('reconnecting')
+  t.s.mic = { isMuted: true, paused: false }
+  t.emit('trackMuted', micPub, t.room.localParticipant)
+  t.emit('reconnected')
+  await t.settle()
+  assert.equal(t.calls.setMic, 0)
+  assert.equal(t.toasts.mic, 0)
+})
+
+test('5c. a remote participant muting does not count as the user', async () => {
+  const t = setup({ share: false, mic: GOOD })
+  t.emit('reconnecting')
+  t.s.mic = { isMuted: true, paused: false }
+  t.emit('trackMuted', micPub, { identity: 'someone-else' })
+  t.emit('reconnected')
+  await t.settle()
+  assert.equal(t.toasts.mic, 1)
+})
+
+test('6. user stops sharing during the settle wait: no toast', async () => {
+  const t = setup({ share: true, mic: GOOD }, { gatedSleep: true })
+  t.emit('reconnecting')
+  t.emit('reconnected')
+  t.s.share = false
+  t.emit('localTrackUnpublished', sharePub)
+  t.wake()
+  await t.settle()
+  assert.equal(t.toasts.share, 0)
+})
+
+test('6b. the reconnect unpublishing the share is not the user', async () => {
+  const t = setup({ share: true, mic: GOOD })
+  t.emit('reconnecting')
+  t.s.share = false
+  t.emit('localTrackUnpublished', sharePub)
+  t.emit('reconnected')
+  await t.settle()
+  assert.equal(t.toasts.share, 1)
+})
+
+test('7. second drop during the settle wait keeps the first snapshot', async () => {
+  const t = setup({ share: true, mic: GOOD }, { gatedSleep: true })
+  t.emit('reconnecting')
+  t.s.share = false
+  t.emit('reconnected')
+  t.emit('reconnecting')
+  t.wake()
+  await t.settle()
+  assert.equal(t.toasts.share, 0, 'stale check must not fire')
+  t.emit('reconnected')
+  t.wake()
+  await t.settle()
+  assert.equal(t.toasts.share, 1)
+})
+
+test('8. disconnect during the wait cancels the check', async () => {
+  const t = setup({ share: true, mic: null }, { gatedSleep: true })
+  t.emit('reconnecting')
+  t.s.share = false
+  t.emit('reconnected')
+  t.emit('disconnected')
+  t.wake()
+  await t.settle()
+  assert.equal(t.toasts.share + t.toasts.mic + t.calls.setMic, 0)
+})
+
+test('9. unmount during the wait: no toast, no mic call', async () => {
+  const t = setup({ share: true, mic: GOOD }, { gatedSleep: true })
+  t.emit('reconnecting')
+  t.s.share = false
+  t.s.mic = null
+  t.emit('reconnected')
+  t.detach()
+  t.wake()
+  await t.settle()
+  assert.equal(t.toasts.share + t.toasts.mic + t.calls.setMic, 0)
 })

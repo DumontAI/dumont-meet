@@ -102,14 +102,27 @@ export const onReconnectMediaReport = (
   }
 }
 
+type SourcedPublication = { source?: string } | undefined
+
 export const attachReconnectMediaGuard = (room: GuardRoom, deps: GuardDeps) => {
   const sleep = deps.sleep ?? defaultSleep
+  // Kept until a check completes, so a second drop during the settle wait
+  // reuses the first snapshot instead of one taken from degraded state.
   let snapshot: MediaSnapshot | null = null
   // Bumped whenever a new drop or a disconnect makes an in-flight check stale.
   let generation = 0
+  // Set between Reconnected and the end of the check. The SDK finishes its
+  // republish before emitting Reconnected, so an unpublish seen here is the
+  // user's own (stop sharing), not the reconnect's unpublish/republish cycle.
+  let settling = false
+  // The SDK never mutes the mic itself, so a mute after the snapshot is the
+  // user's choice (or a moderator's) and must not raise a "lost" toast.
+  let userMutedMic = false
+  let userStoppedShare = false
 
   const handleReconnecting = () => {
     generation++
+    settling = false
     // A resume that escalates to a full restart emits both events: keep the
     // first snapshot, taken while the tracks were still the user's own.
     if (snapshot) return
@@ -117,31 +130,51 @@ export const attachReconnectMediaGuard = (room: GuardRoom, deps: GuardDeps) => {
       hadScreenShare: room.localParticipant.isScreenShareEnabled,
       micWanted: room.localParticipant.isMicrophoneEnabled,
     }
+    userMutedMic = false
+    userStoppedShare = false
   }
 
   const handleDisconnected = () => {
     generation++
+    settling = false
     snapshot = null
+  }
+
+  const handleTrackMuted = (pub: unknown, participant: unknown) => {
+    if (!snapshot || participant !== room.localParticipant) return
+    if ((pub as SourcedPublication)?.source === 'microphone') {
+      userMutedMic = true
+    }
+  }
+
+  const handleLocalTrackUnpublished = (pub: unknown) => {
+    if (!snapshot || !settling) return
+    if ((pub as SourcedPublication)?.source === 'screen_share') {
+      userStoppedShare = true
+    }
   }
 
   const handleReconnected = async () => {
     const taken = snapshot
-    snapshot = null
     if (!taken) return
     const mine = ++generation
+    settling = true
 
     await sleep(REPUBLISH_SETTLE_MS)
     if (mine !== generation) return
+    snapshot = null
 
     let state = readMediaState(room)
     const actions = decideReconnectActions(taken, state)
     const initial = state
 
-    if (actions.notifyScreenShareLost) deps.notifyScreenShareLost()
+    if (actions.notifyScreenShareLost && !userStoppedShare) {
+      deps.notifyScreenShareLost()
+    }
 
     let micRetried = false
-    if (actions.notifyMicMuted) deps.notifyMicrophoneLost()
-    if (actions.retryMic) {
+    if (actions.notifyMicMuted && !userMutedMic) deps.notifyMicrophoneLost()
+    if (actions.retryMic && !userMutedMic) {
       micRetried = true
       try {
         await room.localParticipant.setMicrophoneEnabled(true)
@@ -151,8 +184,9 @@ export const attachReconnectMediaGuard = (room: GuardRoom, deps: GuardDeps) => {
       await sleep(MIC_RECHECK_MS)
       if (mine !== generation) return
       state = readMediaState(room)
-      if (isMicBroken(state)) deps.notifyMicrophoneLost()
+      if (isMicBroken(state) && !userMutedMic) deps.notifyMicrophoneLost()
     }
+    settling = false
 
     const report: ReconnectMediaReport = {
       hadScreenShare: taken.hadScreenShare,
@@ -170,6 +204,8 @@ export const attachReconnectMediaGuard = (room: GuardRoom, deps: GuardDeps) => {
     ['signalReconnecting', handleReconnecting],
     ['reconnected', handleReconnected],
     ['disconnected', handleDisconnected],
+    ['trackMuted', handleTrackMuted],
+    ['localTrackUnpublished', handleLocalTrackUnpublished],
   ]
   listeners.forEach(([event, listener]) => room.on(event, listener))
 

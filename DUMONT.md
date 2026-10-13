@@ -358,7 +358,12 @@ still broken), but only when the mic has no publication or its upstream is
 paused. A published-but-muted mic gets the toast and no call, so the guard
 never unmutes anyone, including someone who muted on purpose right after the
 drop. It never republishes the share (needs a user gesture) and never
-unmutes a mic that was muted before the drop. Emits `reconnect_media_state`.
+unmutes a mic that was muted before the drop. A local mic `TrackMuted` after
+the snapshot, or a screen-share `LocalTrackUnpublished` during the 3s wait
+(the SDK has finished republishing by then), counts as the user's own choice
+and suppresses that toast. The snapshot survives a second drop during the wait,
+so back-to-back drops still report the first loss. Emits
+`reconnect_media_state`.
 Investigation: `tasks/meet-screenshare-drop.md`.
 
 Rebase surface: `hooks/reconnectMediaGuard.ts` (+ `.test.ts`, run with
