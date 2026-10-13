@@ -164,3 +164,32 @@ Ignorados, com motivo:
   usuário, e "Check your microphone" serve.
 - 11: dedupe de toast em quedas seguidas. Com a snapshot única, sai no
   máximo um toast por verificação concluída.
+
+## Rollout (13/10/2026, liberado pelo usuário)
+
+Sala vazia conferida antes de cada passo (`room list` vazio às 03:19Z e 03:35Z).
+
+- **Caddy:** `stream_close_delay 4h` nos 4 `reverse_proxy :7880`, aplicado às
+  03:19Z. `caddy adapt` mostra 4× 14400000000000 e os 4 sites respondem 200.
+  - Prova com load-test (`lk load-test` em `wss://livekit.getdumont.ai`) e
+    `reload caddy` no meio:
+    - 1+1: um resume do subscriber (SDK Go) 1,6s após o reload e outro 15s
+      depois, sem reload;
+    - 2+2: zero resumes;
+    - 1+1: zero resumes;
+    - controle sem reload: zero.
+  - Antes, todo reload fazia todo mundo dar resume.
+  - Repo sincronizado em dumont-ops#16 (mesclado; o hash do live está no
+    host).
+- **Meet:** PR #7 mesclado (merge 701a0185). CI verde, menos o `lint-front`,
+  que falha só em `HomePanel.tsx:218`, erro que já existia.
+  - `dumont/meet-frontend:v1.33.0-4` gerado no hel1 a partir de 701a0185.
+  - `compose.yaml` passou de -3 para -4. Só o frontend reiniciou.
+  - O `assets/Room-*.js` servido em meet.dumont.cloud contém
+    `reconnect_media_state`.
+- **Moveezi #3644 e Shipeezi #303** para `staging`, rebaseados: 55/55 e 27/27.
+
+Falta:
+- teste humano (share + queda de rede de 10s);
+- conferir no próximo deploy do Moveezi que não houve reload no-op;
+- causa B (Mac + Chrome com log debug).
