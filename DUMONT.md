@@ -346,6 +346,35 @@ helper in `notifications/utils.ts`, the two mounts in
 `notifications`, `settings` and `rooms` keys in the five locales, and the
 CHANGELOG entries. Everything else is additive.
 
+## Reconnect media guard (2026-10-12)
+
+After any reconnection (resume or full `restartConnection`), LiveKit republishes
+tracks asynchronously and only logs failures: a screen share came back gone and
+the microphone could stay unpublished or muted for minutes while the person kept
+talking. The guard snapshots the screen-share and mic state on
+`Reconnecting`/`SignalReconnecting`, waits 3s after `Reconnected`, then toasts
+if the share is gone and retries `setMicrophoneEnabled(true)` once (toast if
+still broken), but only when the mic has no publication or its upstream is
+paused. A published-but-muted mic gets the toast and no call, so the guard
+never unmutes anyone, including someone who muted on purpose right after the
+drop. It never republishes the share (needs a user gesture) and never
+unmutes a mic that was muted before the drop. A local mic `TrackMuted` after
+the snapshot, or a screen-share `LocalTrackUnpublished` during the 3s wait
+(the SDK has finished republishing by then), counts as the user's own choice
+and suppresses that toast. The snapshot survives a second drop during the wait,
+so back-to-back drops still report the first loss. Emits
+`reconnect_media_state`.
+Investigation: `tasks/meet-screenshare-drop.md`.
+
+Rebase surface: `hooks/reconnectMediaGuard.ts` (+ `.test.ts`, run with
+`node --test`), `hooks/useReconnectMediaGuard.ts`,
+`components/ReconnectMediaGuard.tsx` and its mount in `prefabs/VideoConference.tsx`,
+the subscription in `components/ConnectionObserver.tsx`, `ToastReconnectMediaLost.tsx`,
+the two members in `NotificationType.ts`, their case in `ToastRegion.tsx`, the two
+helpers in `notifications/utils.ts`, the `screenShareLostOnReconnect` and
+`microphoneLostOnReconnect` keys in the five `notifications.json` locales, and
+the CHANGELOG entry.
+
 ## Screen-share renegotiation drops the room (2026-09-29)
 
 Sharing a screen used to drop every participant at once. The room ran on a

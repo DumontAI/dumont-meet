@@ -1,6 +1,8 @@
 export enum NotificationType {
   AutoMuteLargeRoom = 'autoMuteLargeRoom',
   ConnectionQualityPoor = 'connectionQualityPoor',
+  ScreenShareLostOnReconnect = 'screenShareLostOnReconnect',
+  MicrophoneLostOnReconnect = 'microphoneLostOnReconnect',
   ParticipantJoined = 'participantJoined',
   HandRaised = 'handRaised',
   ParticipantMuted = 'participantMuted',

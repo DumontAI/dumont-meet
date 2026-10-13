@@ -72,5 +72,7 @@
   "connectionQualityPoor": {
     "auto": "Tu conexión es inestable. Hemos desactivado tu cámara para que el audio siga funcionando. Puedes volver a activarla cuando quieras.",
     "camera": "Activar cámara"
-  }
+  },
+  "screenShareLostOnReconnect": "Tu pantalla compartida se detuvo cuando se cortó la conexión. Vuelve a compartir tu pantalla.",
+  "microphoneLostOnReconnect": "Tu micrófono dejó de llegar a los demás después de que se cortara la conexión. Revisa tu micrófono."
 }

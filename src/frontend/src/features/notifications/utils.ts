@@ -24,6 +24,24 @@ export const notifyConnectionDegraded = () => {
   )
 }
 
+export const notifyScreenShareLostOnReconnect = () => {
+  toastQueue.add(
+    {
+      type: NotificationType.ScreenShareLostOnReconnect,
+    },
+    { timeout: NotificationDuration.ALERT }
+  )
+}
+
+export const notifyMicrophoneLostOnReconnect = () => {
+  toastQueue.add(
+    {
+      type: NotificationType.MicrophoneLostOnReconnect,
+    },
+    { timeout: NotificationDuration.ALERT }
+  )
+}
+
 export const showLowerHandToast = (
   participant: Participant,
   onClose: () => void
