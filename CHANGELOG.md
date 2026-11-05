@@ -8,6 +8,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Changed
+
+- 🔧(frontend) use a full-size Open Graph image for link previews
+
 ## [Unreleased]
 
 ### Added
