@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as WouterLink } from 'wouter'
 import {
@@ -189,6 +189,11 @@ const RoomRow = ({ room }: { room: ApiRoom }) => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [draft, setDraft] = useState(room.name || room.slug)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isEditing) nameInputRef.current?.focus()
+  }, [isEditing])
 
   const name = room.name || room.slug
   const copyLabel = isRoomUrlCopied ? t('copied') : t('copy', { name })
@@ -215,7 +220,7 @@ const RoomRow = ({ room }: { room: ApiRoom }) => {
             aria-label={t('rename')}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            autoFocus
+            ref={nameInputRef}
             maxLength={255}
           />
           <Button

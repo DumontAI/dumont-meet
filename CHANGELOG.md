@@ -12,6 +12,10 @@ and this project adheres to
 
 - 🔧(frontend) use a full-size Open Graph image for link previews
 
+### Fixed
+
+- ♿️(frontend) focus the room rename input without autoFocus
+
 ## [Unreleased]
 
 ### Added
