@@ -46,7 +46,6 @@ export const useRenameRoom = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: renameRoom,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: [keys.rooms] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [keys.rooms] }),
   })
 }
