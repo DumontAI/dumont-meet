@@ -12,6 +12,10 @@ and this project adheres to
 
 - 🔧(frontend) use a full-size Open Graph image for link previews
 
+### Fixed
+
+- 🐛(frontend) restore the camera when a poor connection recovers
+
 ## [Unreleased]
 
 ### Added

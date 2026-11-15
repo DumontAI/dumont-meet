@@ -329,19 +329,21 @@ uplink. Two additions handle the local connection itself.
 
 - `src/frontend/src/features/rooms/livekit/hooks/usePoorConnectionFallback.ts`:
   local connection quality stuck on `Poor` for 15s turns the camera off and
-  raises `ToastConnectionQualityPoor`. It never turns the camera back on by
-  itself, so a flapping connection cannot make the video blink; the toast
-  offers one click back, and the behaviour sits behind the preference
+  raises `ToastConnectionQualityPoor`. When the connection recovers it turns the
+  camera back on, but only when this fallback turned it off: a camera the user
+  toggled on or off stays as they left it. The toast offers one click back, and
+  the behaviour sits behind the preference
   `is_auto_degrade_on_poor_connection_enabled` (default on), next to the
   auto-mute switch. Emits `connection_fallback_audio_only` for analytics.
 - `src/frontend/src/features/rooms/livekit/components/ReconnectNotice.tsx`: a
   "Reconnecting..." pill while LiveKit is in `Reconnecting` or
   `SignalReconnecting`, so a two-second hiccup does not read as a frozen call.
 
-Rebase surface: the two components, the hook, the `ConnectionQualityPoor`
-member in `NotificationType.ts`, its case in `ToastRegion.tsx`, the toast
-helper in `notifications/utils.ts`, the two mounts in
-`prefabs/VideoConference.tsx`, the switch in
+Rebase surface: the two components, the hook and its framework-free
+`poorConnectionFallback.ts` core (+ `.test.ts`, run with `node --test`), the
+`ConnectionQualityPoor` member in `NotificationType.ts`, its case in
+`ToastRegion.tsx`, the toast helper in `notifications/utils.ts`, the two mounts
+in `prefabs/VideoConference.tsx`, the switch in
 `settings/components/tabs/GeneralTab.tsx`, the store default, the
 `notifications`, `settings` and `rooms` keys in the five locales, and the
 CHANGELOG entries. Everything else is additive.
