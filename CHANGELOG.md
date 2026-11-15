@@ -14,6 +14,7 @@ and this project adheres to
 
 ### Fixed
 
+- 🐛(frontend) restore the camera when a poor connection recovers
 - ♿️(frontend) focus the room rename input without autoFocus
 
 ## [Unreleased]
