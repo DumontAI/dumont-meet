@@ -13,6 +13,7 @@ interface ImportMetaEnv {
   // "false" hides the transcript checkbox on the recording panel, for
   // deployments with no SUMMARY_SERVICE_ENDPOINT behind it.
   readonly VITE_APP_RECORDING_TRANSCRIPT: string
+  readonly VITE_MEDIA_BASE_URL?: string
 }
 
 interface ImportMeta {

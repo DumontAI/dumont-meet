@@ -13,7 +13,9 @@ export interface ApiConfig {
     flags_api_host?: string
   }
   support?: {
-    id: string
+    widget_script_url?: string
+    widget_api_url?: string
+    widget_channel?: string
     help_article_transcript: string
     help_article_recording: string
     help_article_more_tools: string
@@ -22,18 +24,28 @@ export interface ApiConfig {
     url: string
   }
   documentation_url?: string
+  technical_documentation_url?: string
   external_home_url?: string
   silence_livekit_debug_logs?: boolean
   is_silent_login_enabled?: boolean
   custom_css_url?: string
   use_french_gov_footer?: boolean
   use_proconnect_button?: boolean
+  allow_unregistered_rooms?: boolean
   idle_disconnect_warning_delay?: number
   recording?: {
     is_enabled?: boolean
     available_modes?: RecordingMode[]
     expiration_days?: number
     max_duration?: number
+    encoding?: {
+      is_custom_enabled: boolean
+      available_resolutions: string[]
+      available_profiles: string[]
+      default_resolution?: string | null
+      default_profile?: string | null
+    }
+    authenticated_participants_enabled?: boolean
   }
   background_image: {
     upload_is_enabled: boolean

@@ -3,7 +3,7 @@
 Dumont's deployment of [LaSuite Meet](https://github.com/suitenumerique/meet) (DINUM, MIT).
 
 - `main` tracks clean upstream. Never commit here, never push upstream.
-- `dumont` holds Dumont customizations only, branched from the deployed upstream tag.
+- `dumont` holds Dumont customizations only, currently based on upstream v1.37.0.
 
 ## What the `dumont` branch changes
 
@@ -83,14 +83,22 @@ celery worker) must switch to that tag together.
 
 ## Upgrading
 
-1. `git fetch upstream --tags && git checkout main && git merge --ff-only upstream/main`
-2. Rebase `dumont` onto the new tag, rebuild the frontend and backend images with the commands above
-3. Deploy the new backend image and run `manage.py migrate`
+1. `git fetch upstream --tags`
+2. From a branch based on `dumont`, merge the target tag and resolve the Dumont customizations. Do not rebase the shared `dumont` branch; a merge keeps published links and branch history stable.
+3. Renumber the Dumont migrations after the latest upstream one. They are currently `0030_name_generated_rooms` and `0031_alter_room_options`; move them to the next free numbers, update their dependencies to the latest upstream migration, and regenerate the options migration with `makemigrations`.
+4. Rebuild the backend and frontend images with the commands above and bump their tags together. Run `manage.py migrate`.
+5. The shared LiveKit server and egress are not part of this upgrade. Meet v1.37.0 runs against the existing server; changing LiveKit is a separate change because Moveezi shares the same deployment.
 
 Backend branding is entirely env-driven (`DJANGO_EMAIL_BRAND_NAME`,
 `DJANGO_EMAIL_LOGO_IMG`), but the backend is no longer stock: the pre-join
-presence endpoint is a patch, so after a rebase rebuild the backend image with
+presence endpoint is a patch, so after an upgrade rebuild the backend image with
 the command above instead of bumping `lasuite/meet-backend`.
+
+## Upstream v1.37.0 (2026-11-16)
+
+The fork is now based on v1.37.0. The merge brought the upstream security fixes (nginx, DRF, Pillow, Node, brotli, musl), Portuguese, reconnect backoff, recording interruption notices, iframe token exchange, soft-deletion and audit logging. The Dumont customizations were resolved in the merge: branding, home and room naming, View menu, reconnect guard, poor-connection fallback, ScreenShareErrorModal, pre-join presence and the split peer connection.
+
+Two test systems coexist: upstream's vitest tests and the Dumont node tests. `npm test` runs the two node tests (`reconnectMediaGuard`, `poorConnectionFallback`) and then `vitest run`. `test:node` and `test:unit` run them separately. `tsconfig.app.json` excludes `src/**/*.test.ts`; `vitest.config.ts` excludes the two node tests and maps `@` to `src` so the upstream `vi.mock('@/...')` calls resolve.
 
 ## Deployment
 
@@ -100,7 +108,7 @@ LiveKit sharing constraints.
 All three images (backend, frontend, transcriber) build with one command:
 
 ```bash
-deploy/meet/build.sh <tag>   # e.g. v1.33.0-dumont-1
+deploy/meet/build.sh <tag>   # e.g. v1.37.0-dumont-1
 ```
 
 It carries the frontend build args (`VITE_APP_TITLE="Dumont Meet"`,

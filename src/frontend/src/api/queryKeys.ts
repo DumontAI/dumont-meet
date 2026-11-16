@@ -8,4 +8,5 @@ export const keys = {
   participantsPreview: 'participantsPreview',
   roomCreationCallback: 'roomCreationCallback',
   files: 'files',
+  startRecording: 'startRecording',
 }

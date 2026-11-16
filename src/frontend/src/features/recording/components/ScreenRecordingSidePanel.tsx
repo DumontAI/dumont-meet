@@ -1,4 +1,4 @@
-import { Div, H, Text } from '@/primitives'
+import { Button, Div, H, Text } from '@/primitives'
 
 import { css } from '@/styled-system/css'
 import { useRoomId } from '@/features/rooms/livekit/hooks/useRoomId'
@@ -22,10 +22,19 @@ import { ControlsButton } from './ControlsButton'
 import { RowWrapper } from './RowWrapper'
 import { VStack } from '@/styled-system/jsx'
 import { Checkbox } from '@/primitives/Checkbox'
-import { useTranscriptionLanguage } from '@/features/settings'
+import {
+  SettingsDialogExtendedKey,
+  useTranscriptionLanguage,
+} from '@/features/settings'
 import { useMutateRecording } from '../hooks/useMutateRecording'
+import { useRecordingEncoding } from '../hooks/useRecordingEncoding'
+import { openSettingsDialog } from '@/stores/settings'
 import { useSidePanel } from '@/features/rooms/livekit/hooks/useSidePanel'
 import { useIsAdminOrOwner } from '@/features/rooms/livekit/hooks/useIsAdminOrOwner'
+import {
+  useCanRecord,
+  useIsRecordingOpenToParticipants,
+} from '../hooks/useCanRecord'
 import { FeatureFlags } from '@/features/analytics/enums'
 import { LimitDescription } from './LimitDescription'
 import { captureEvent, reportError } from '@/features/analytics/telemetry'
@@ -46,15 +55,23 @@ export const ScreenRecordingSidePanel = () => {
   const [includeTranscript, setIncludeTranscript] = useState(false)
 
   const isAdminOrOwner = useIsAdminOrOwner()
+  const canRecord = useCanRecord()
+  const isRecordingOpenToParticipants = useIsRecordingOpenToParticipants()
 
   const hasScreenRecordingAccess = useHasRecordingAccess(
     RecordingMode.ScreenRecording,
     FeatureFlags.ScreenRecording
   )
 
+  const hasTranscriptAccess = useHasRecordingAccess(
+    RecordingMode.Transcript,
+    FeatureFlags.Transcript
+  )
   const { notifyParticipants } = useNotifyParticipants()
   const { selectedLanguageKey, isLanguageSetToAuto } =
     useTranscriptionLanguage()
+
+  const { encoding, isCustomEncodingEnabled } = useRecordingEncoding()
 
   const roomId = useRoomId()
 
@@ -95,7 +112,8 @@ export const ScreenRecordingSidePanel = () => {
           ...(!isLanguageSetToAuto && {
             language: selectedLanguageKey,
           }),
-          ...(includeTranscript && { transcribe: true }),
+          ...(includeTranscript && hasTranscriptAccess && { transcribe: true }),
+          ...(encoding && { encoding }),
         }
 
         await startRecording({
@@ -110,6 +128,8 @@ export const ScreenRecordingSidePanel = () => {
         captureEvent('screen-recording-started', {
           includeTranscript: includeTranscript,
           language: selectedLanguageKey,
+          resolution: encoding?.resolution,
+          profile: encoding?.profile,
         })
       }
     } catch (error) {
@@ -119,11 +139,13 @@ export const ScreenRecordingSidePanel = () => {
     }
   }
 
-  if (!isAdminOrOwner) {
+  if (!canRecord) {
     return (
       <NoAccessView
         i18nKeyPrefix={keyPrefix}
-        i18nKey="notAdminOrOwner"
+        i18nKey={
+          isRecordingOpenToParticipants ? 'notLoggedIn' : 'notAdminOrOwner'
+        }
         helpArticle={data?.support?.help_article_recording}
         imagePath="/assets/intro-slider/4.png"
         handleRequest={handleRequestScreenRecording}
@@ -186,28 +208,60 @@ export const ScreenRecordingSidePanel = () => {
         <RowWrapper iconName="cloud_download" position="first">
           <Text variant="sm">{t('details.destination')}</Text>
         </RowWrapper>
-        <RowWrapper iconName="mail" position="last">
+        <RowWrapper
+          iconName="mail"
+          position={isCustomEncodingEnabled ? 'middle' : 'last'}
+        >
           <Text variant="sm">{t('details.receiver')}</Text>
         </RowWrapper>
-
-        <div className={css({ height: '15px' })} />
-
-        {recordingTranscriptEnabled && (
-          <div
-            className={css({
-              width: '100%',
-              marginLeft: '20px',
-            })}
-          >
-            <Checkbox
-              size="sm"
-              isSelected={includeTranscript}
-              onChange={setIncludeTranscript}
-              isDisabled={statuses.isActive || isPendingToStart}
+        {isCustomEncodingEnabled && (
+          <RowWrapper iconName="file_settings_line" position="last">
+            <Text
+              variant="sm"
+              className={css({
+                minWidth: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              })}
             >
-              <Text variant="sm">{t('details.transcription')}</Text>
-            </Checkbox>
-          </div>
+              {t('details.quality')}
+            </Text>
+            <Text
+              variant="sm"
+              className={css({ flexShrink: 0, whiteSpace: 'nowrap' })}
+            >
+              <Button
+                variant="text"
+                size="xs"
+                onPress={() =>
+                  openSettingsDialog(SettingsDialogExtendedKey.RECORDING)
+                }
+              >
+                {t('details.qualityEdit')}
+              </Button>
+            </Text>
+          </RowWrapper>
+        )}
+        {hasTranscriptAccess && recordingTranscriptEnabled && (
+          <>
+            <div className={css({ height: '15px' })} />
+            <div
+              className={css({
+                width: '100%',
+                marginLeft: '20px',
+              })}
+            >
+              <Checkbox
+                size="sm"
+                isSelected={includeTranscript}
+                onChange={setIncludeTranscript}
+                isDisabled={statuses.isActive || isPendingToStart}
+              >
+                <Text variant="sm">{t('details.transcription')}</Text>
+              </Checkbox>
+            </div>
+          </>
         )}
       </VStack>
       <ControlsButton

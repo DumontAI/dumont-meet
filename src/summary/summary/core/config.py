@@ -84,6 +84,8 @@ class Settings(BaseSettings):
     aws_s3_secret_access_key: SecretStr
     aws_s3_secure_access: bool = True
     aws_s3_region_name: str | None = None
+    aws_s3_request_checksum_calculation: str | None = None
+    aws_s3_response_checksum_validation: str | None = None
     aws_transcript_path: str = "transcripts"
     aws_summary_path: str = "summaries"
 
@@ -126,6 +128,7 @@ class Settings(BaseSettings):
     # Sentry
     sentry_is_enabled: bool = False
     sentry_dsn: Optional[str] = None
+    sentry_traces_sample_rate: float = Field(default=0.1, ge=0.0, le=1.0)
 
     # Posthog (analytics)
     posthog_enabled: bool = False
