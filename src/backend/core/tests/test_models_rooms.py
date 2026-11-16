@@ -26,12 +26,9 @@ def test_models_rooms_str():
 
 
 def test_models_rooms_ordering():
-    """Rooms should be returned ordered by name."""
-    RoomFactory.create_batch(3)
-    rooms = Room.objects.all()
-    # Remove hyphens because postgresql is ignoring them when they sort
-    assert rooms[1].name.replace("-", "") >= rooms[0].name.replace("-", "")
-    assert rooms[2].name.replace("-", "") >= rooms[1].name.replace("-", "")
+    """Rooms should be returned newest first."""
+    rooms = RoomFactory.create_batch(3)
+    assert list(Room.objects.all()) == list(reversed(rooms))
 
 
 def test_models_rooms_name_maxlength():

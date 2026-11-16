@@ -170,6 +170,7 @@ class RoomSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     def validate_room_id(self, value):
+        """Reserve UUID-shaped codes and reject an existing join link."""
         if self.instance:
             return value
         try:
