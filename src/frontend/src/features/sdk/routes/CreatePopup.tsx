@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { css } from '@/styled-system/css'
-import { generateRoomId, useCreateRoom } from '../../rooms'
+import { defaultRoomName, generateRoomId, useCreateRoom } from '../../rooms'
 import { useUser } from '@/features/auth/api/useUser'
 import { Spinner } from '@/primitives/Spinner'
 import { CallbackIdHandler } from '../utils/CallbackIdHandler'
@@ -45,6 +45,7 @@ const CreatePopup = () => {
         const slug = generateRoomId()
         const roomData = await createRoom({
           slug,
+          name: defaultRoomName(),
           callbackId,
         })
         // Send room data back to parent window and clean up resources

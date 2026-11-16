@@ -2,7 +2,11 @@ import { useTranslation } from 'react-i18next'
 import { MenuItem, Menu as RACMenu } from 'react-aria-components'
 import { Button, Menu } from '@/primitives'
 import { navigateTo } from '@/navigation/navigateTo'
-import { generateRoomId, useCreateRoom } from '@/features/rooms'
+import {
+  defaultRoomName,
+  generateRoomId,
+  useCreateRoom,
+} from '@/features/rooms'
 import { RiAddLine, RiLink } from '@remixicon/react'
 import { LaterMeetingDialog } from '@/features/home/components/LaterMeetingDialog'
 import { useState } from 'react'
@@ -30,10 +34,11 @@ export const CreateMeetingMenu = () => {
             className={menuRecipe({ icon: true, variant: 'light' }).item}
             onAction={() => {
               const slug = generateRoomId()
-              createRoom({ slug, username }).then((data) =>
-                navigateTo('room', data.slug, {
-                  state: { create: true, initialRoomData: data },
-                })
+              createRoom({ slug, name: defaultRoomName(), username }).then(
+                (data) =>
+                  navigateTo('room', data.slug, {
+                    state: { create: true, initialRoomData: data },
+                  })
               )
             }}
             data-attr="create-option-instant"
@@ -45,7 +50,9 @@ export const CreateMeetingMenu = () => {
             className={menuRecipe({ icon: true, variant: 'light' }).item}
             onAction={() => {
               const slug = generateRoomId()
-              createRoom({ slug, username }).then(setLaterRoom)
+              createRoom({ slug, name: defaultRoomName(), username }).then(
+                setLaterRoom
+              )
             }}
             data-attr="create-option-later"
           >

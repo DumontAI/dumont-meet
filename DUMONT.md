@@ -377,6 +377,20 @@ helpers in `notifications/utils.ts`, the `screenShareLostOnReconnect` and
 `microphoneLostOnReconnect` keys in the five `notifications.json` locales, and
 the CHANGELOG entry.
 
+## Readable room names and stable links (2026-11-16)
+
+The signed-in home listed rooms by the random code in their join link, because the create call sent that code as the room name. New rooms now get a date-based display name and keep the generated code as the link. Renaming a room no longer moves the link, so a room can be shared before it has a title.
+
+- `core/models.py`: `clean_fields` generates a slug only when the room has none, and `Room.Meta.ordering` is newest first.
+- `core/api/serializers.py` and `viewsets.py`: `room_id` is a write-only create field, checked for uniqueness and for a UUID shape; updates ignore it. The display `name` and the link `slug` are separate.
+- `core/migrations/0025_name_generated_rooms.py`: names existing rooms whose name is the generated 3-4-3 code after the owner's timezone, without touching the slug.
+- `core/migrations/0026_alter_room_options.py`: newest-first ordering.
+- Frontend: `rooms/utils/defaultRoomName.ts`; `createRoom` sends `name` and `room_id`; the instant, later, SDK popup and auto-create paths use it.
+
+Deploy: rebuild backend and frontend, then run `manage.py migrate` on `/opt/meet` before recreating the backend and frontend services. The migration only renames rooms whose name is the generated code; user-named rooms are untouched.
+
+Rebase surface: the room model, serializer, viewset, the two migrations, the create/update tests, the room API and home create menu, the SDK popup, `Conference.tsx`, the new helper and the CHANGELOG entry.
+
 ## Screen-share renegotiation drops the room (2026-09-29)
 
 Sharing a screen used to drop every participant at once. The room ran on a

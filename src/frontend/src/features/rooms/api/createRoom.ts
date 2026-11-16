@@ -5,19 +5,22 @@ import type { ApiRoom } from './ApiRoom'
 
 export interface CreateRoomParams {
   slug: string
+  name: string
   callbackId?: string
   username?: string
 }
 
 const createRoom = ({
   slug,
+  name,
   callbackId,
   username = '',
 }: CreateRoomParams): Promise<ApiRoom> => {
   return fetchApi(`rooms/?username=${encodeURIComponent(username)}`, {
     method: 'POST',
     body: JSON.stringify({
-      name: slug,
+      name,
+      room_id: slug,
       callback_id: callbackId,
     }),
   })

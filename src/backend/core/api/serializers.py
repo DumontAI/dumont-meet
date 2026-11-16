@@ -2,6 +2,7 @@
 
 # pylint: disable=abstract-method,no-name-in-module
 import logging
+import uuid
 from os.path import splitext
 from typing import Literal
 from urllib.parse import quote
@@ -146,10 +147,40 @@ class ListRoomSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     """Serialize Room model for the API."""
 
+    # The random room code in the join link. It is separate from the display
+    # name so a room can be readable and renamed without moving the link.
+    room_id = serializers.SlugField(write_only=True, required=False)
+
     class Meta:
         model = models.Room
-        fields = ["id", "name", "slug", "configuration", "access_level", "pin_code"]
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "room_id",
+            "configuration",
+            "access_level",
+            "pin_code",
+        ]
         read_only_fields = ["id", "slug", "pin_code"]
+
+    def validate(self, attrs):
+        if self.instance:
+            attrs.pop("room_id", None)
+        return super().validate(attrs)
+
+    def validate_room_id(self, value):
+        if self.instance:
+            return value
+        try:
+            uuid.UUID(value)
+        except ValueError:
+            pass
+        else:
+            raise serializers.ValidationError("This room link is reserved.")
+        if models.Room.objects.filter(slug=value).exists():
+            raise serializers.ValidationError("This room link is already in use.")
+        return value
 
     def validate_configuration(self, value):
         """Validate room configuration against the RoomConfiguration schema."""

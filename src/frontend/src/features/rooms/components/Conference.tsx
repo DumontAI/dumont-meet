@@ -23,6 +23,7 @@ import { ErrorScreen } from '@/components/ErrorScreen'
 import { fetchRoom } from '../api/fetchRoom'
 import type { ApiRoom } from '../api/ApiRoom'
 import { useCreateRoom } from '../api/createRoom'
+import { defaultRoomName } from '../utils/defaultRoomName'
 import { InviteDialog } from './InviteDialog'
 import { VideoConference } from '../livekit/prefabs/VideoConference'
 import { css } from '@/styled-system/css'
@@ -96,7 +97,7 @@ export const Conference = ({
         username: username,
       }).catch((error) => {
         if (error.statusCode == '404') {
-          createRoom({ slug: roomId, username })
+          createRoom({ slug: roomId, name: defaultRoomName(), username })
         }
       }),
     retry: false,
