@@ -252,6 +252,9 @@ class RoomViewSet(  # pylint: disable=too-many-public-methods
         user = self.request.user
         save_kwargs = {}
 
+        if room_id := serializer.validated_data.pop("room_id", None):
+            save_kwargs["slug"] = room_id
+
         if (
             "access_level" not in serializer.validated_data
             and user.default_room_access_level not in (None, "")

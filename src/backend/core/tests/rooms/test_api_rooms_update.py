@@ -97,6 +97,7 @@ def test_api_rooms_update_administrators(mock_update_metadata):
         users=[(user, random.choice(["administrator", "owner"]))],
         configuration={"can_publish_sources": ["camera"]},
     )
+    original_slug = room.slug
     client = APIClient()
     client.force_login(user)
 
@@ -113,7 +114,7 @@ def test_api_rooms_update_administrators(mock_update_metadata):
     assert response.status_code == 200
     room.refresh_from_db()
     assert room.name == "New name"
-    assert room.slug == "new-name"
+    assert room.slug == original_slug
     assert room.access_level == RoomAccessLevel.PUBLIC
     assert room.configuration == {"can_publish_sources": ["camera", "microphone"]}
 
@@ -135,6 +136,7 @@ def test_api_rooms_update_administrators_configuration_only(mock_update_metadata
         users=[(user, random.choice(["administrator", "owner"]))],
         configuration={},
     )
+    original_slug = room.slug
     client = APIClient()
     client.force_login(user)
 
@@ -150,7 +152,7 @@ def test_api_rooms_update_administrators_configuration_only(mock_update_metadata
     assert response.status_code == 200
     room.refresh_from_db()
     assert room.name == "New name"
-    assert room.slug == "new-name"
+    assert room.slug == original_slug
     assert room.access_level == RoomAccessLevel.RESTRICTED
     assert room.configuration == {"can_publish_sources": ["camera", "microphone"]}
 
@@ -172,6 +174,7 @@ def test_api_rooms_update_administrators_access_level_only(mock_update_metadata)
         users=[(user, random.choice(["administrator", "owner"]))],
         configuration={"can_publish_sources": ["camera"]},
     )
+    original_slug = room.slug
     client = APIClient()
     client.force_login(user)
 
@@ -186,7 +189,7 @@ def test_api_rooms_update_administrators_access_level_only(mock_update_metadata)
     assert response.status_code == 200
     room.refresh_from_db()
     assert room.name == "New name"
-    assert room.slug == "new-name"
+    assert room.slug == original_slug
     assert room.access_level == RoomAccessLevel.PUBLIC
     assert room.configuration == {"can_publish_sources": ["camera"]}
 
@@ -209,6 +212,7 @@ def test_api_rooms_update_administrators_name_only(mock_update_metadata):
         configuration={"can_publish_sources": ["camera"]},
         users=[(user, random.choice(["administrator", "owner"]))],
     )
+    original_slug = room.slug
     client = APIClient()
     client.force_login(user)
 
@@ -220,7 +224,7 @@ def test_api_rooms_update_administrators_name_only(mock_update_metadata):
     assert response.status_code == 200
     room.refresh_from_db()
     assert room.name == "New name"
-    assert room.slug == "new-name"
+    assert room.slug == original_slug
     # Unrelated fields untouched
     assert room.access_level == RoomAccessLevel.PUBLIC
     assert room.configuration == {"can_publish_sources": ["camera"]}

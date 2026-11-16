@@ -66,6 +66,47 @@ def test_api_rooms_create_authenticated(reset_cache):
     assert not rooms_data
 
 
+def test_api_rooms_create_authenticated_with_readable_name(reset_cache):
+    """A readable name and a separate generated room code can be sent together."""
+    user = UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        "/api/v1.0/rooms/",
+        {
+            "name": "Meeting 2026-11-16 14:43",
+            "room_id": "cak-tqsq-ytn",
+        },
+    )
+
+    assert response.status_code == 201
+    room = Room.objects.get()
+    assert room.name == "Meeting 2026-11-16 14:43"
+    assert room.slug == "cak-tqsq-ytn"
+    assert room.accesses.filter(role="owner", user=user).exists() is True
+
+
+def test_api_rooms_create_authenticated_room_id_uuid_rejected():
+    """A room code that looks like a UUID would collide with the id lookup."""
+    user = UserFactory()
+
+    client = APIClient()
+    client.force_login(user)
+
+    response = client.post(
+        "/api/v1.0/rooms/",
+        {
+            "name": "Meeting",
+            "room_id": "00000000-0000-0000-0000-000000000000",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "room_id" in response.json()
+
+
 def test_api_rooms_create_generation_cache(reset_cache):
     """
     Authenticated users creating a room with a callback ID should have room data stored in cache.

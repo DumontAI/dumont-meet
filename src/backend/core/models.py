@@ -447,7 +447,7 @@ class Room(Resource):
 
     class Meta:
         db_table = "meet_room"
-        ordering = ("name",)
+        ordering = ("-created_at",)
         verbose_name = _("Room")
         verbose_name_plural = _("Rooms")
 
@@ -471,12 +471,14 @@ class Room(Resource):
 
     def clean_fields(self, exclude=None):
         """
-        Automatically generate the slug from the name and make sure it does not look like a UUID.
+        Generate the slug from the name only when the room does not have one.
 
-        We don't want any overlapping between the `slug` and the `id` fields because they can
-        both be used to get a room detail view on the API.
+        The slug is the room link, so keeping it once set means a rename does
+        not break links that were already shared. It still must not look like a
+        UUID, because both the slug and the id are accepted in the API lookup.
         """
-        self.slug = slugify(self.name)
+        if not self.slug:
+            self.slug = slugify(self.name)
         try:
             uuid.UUID(self.slug)
         except ValueError:
