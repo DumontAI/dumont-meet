@@ -1,19 +1,21 @@
 {
   "name": "meet",
   "private": true,
-  "version": "1.33.0",
+  "version": "1.37.0",
   "type": "module",
   "scripts": {
     "dev": "panda codegen && vite",
     "build": "panda codegen && tsc -b && vite build",
     "build:debug": "VITE_ANALYZE=true npm run build -- --debug",
+    "test": "panda codegen && node --test src/features/rooms/livekit/hooks/reconnectMediaGuard.test.ts src/features/rooms/livekit/hooks/poorConnectionFallback.test.ts && vitest run",
+    "test:node": "node --test src/features/rooms/livekit/hooks/reconnectMediaGuard.test.ts src/features/rooms/livekit/hooks/poorConnectionFallback.test.ts",
+    "test:unit": "panda codegen && vitest run",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "i18n:extract": "npx i18next -c i18next-parser.config.json",
     "format": "prettier --write ./src",
-    "check": "prettier --check ./src",
-    "test": "node --test 'src/**/*.test.ts'"
+    "check": "prettier --check ./src"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",
@@ -30,7 +32,6 @@
     "@remixicon/react": "4.9.0",
     "@tanstack/react-query": "5.101.4",
     "@timephy/rnnoise-wasm": "1.0.0",
-    "crisp-sdk-web": "1.1.2",
     "hoofd": "1.7.3",
     "humanize-duration": "3.34.1",
     "i18next": "26.3.6",
@@ -40,11 +41,11 @@
     "livekit-client": "2.21.0",
     "posthog-js": "1.418.10",
     "react": "18.3.1",
-    "react-aria": "3.50.0",
-    "react-aria-components": "1.19.0",
+    "react-aria": "3.51.0",
+    "react-aria-components": "1.20.0",
     "react-dom": "18.3.1",
     "react-i18next": "17.0.12",
-    "react-stately": "3.48.0",
+    "react-stately": "3.49.0",
     "use-sound": "5.0.0",
     "valtio": "2.3.2",
     "wouter": "3.10.0"
@@ -73,6 +74,7 @@
     "typescript-eslint": "8.60.1",
     "vite": "8.0.14",
     "vite-plugin-static-copy": "4.1.1",
-    "vite-plugin-svgr": "5.2.0"
+    "vite-plugin-svgr": "5.2.0",
+    "vitest": "5.0.2"
   }
 }
