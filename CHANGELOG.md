@@ -10,6 +10,7 @@ and this project adheres to
 
 ### Added
 
+- ✨(recording) let owners share a recording with another user
 - ✨(frontend) keep the audio when the connection goes poor
 - ✨(frontend) show a reconnecting notice while the room recovers
 - ✨(frontend) warn when a reconnect drops the screen share or the microphone
