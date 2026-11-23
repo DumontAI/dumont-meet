@@ -262,6 +262,7 @@ class RecordingAccessSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "user"]
 
     def validate_email(self, value):
+        """Resolve the email to an existing user."""
         try:
             return models.User.objects.get(email__iexact=value)
         except models.User.DoesNotExist:
@@ -274,23 +275,26 @@ class RecordingAccessSerializer(serializers.ModelSerializer):
             ) from None
 
     def validate_role(self, value):
+        """Refuse to make someone an owner through a share invite."""
         if value == models.RoleChoices.OWNER:
             raise serializers.ValidationError(
                 _("Only member or administrator roles can be granted here.")
             )
         return value
 
-    def validate(self, data):
+    def validate(self, attrs):
+        """Refuse a second access row for a user who already has one."""
         recording = self.context["recording"]
         if models.RecordingAccess.objects.filter(
-            recording=recording, user=data["email"]
+            recording=recording, user=attrs["email"]
         ).exists():
             raise serializers.ValidationError(
                 {"email": _("This user already has access to the recording.")}
             )
-        return data
+        return attrs
 
     def create(self, validated_data):
+        """Create the access with the resolved user and the target recording."""
         user = validated_data.pop("email")
         return models.RecordingAccess.objects.create(
             recording=self.context["recording"], user=user, **validated_data

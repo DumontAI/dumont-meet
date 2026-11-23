@@ -12,6 +12,7 @@ pytestmark = pytest.mark.django_db
 
 
 def accesses_url(recording):
+    """Return the accesses endpoint URL for a recording."""
     return f"/api/v1.0/recordings/{recording.id!s}/accesses/"
 
 
