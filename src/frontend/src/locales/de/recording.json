@@ -1,7 +1,7 @@
 {
   "error": {
     "title": "Aufzeichnung nicht verfügbar",
-    "body": "Die Aufzeichnung ist nicht verfügbar oder wurde möglicherweise gelöscht. Nur der Host der Besprechung hat Zugriff darauf. Wende dich bei Bedarf gerne an die Person."
+    "body": "Die Aufzeichnung ist nicht verfügbar, wurde möglicherweise gelöscht oder wurde nicht für dich freigegeben. Bitte den Host der Besprechung, dir Zugriff zu geben."
   },
   "expired": {
     "title": "Aufzeichnung abgelaufen",
@@ -19,10 +19,16 @@
     "title": "Deine Aufzeichnung ist bereit!",
     "body": "Aufzeichnung des Meetings {{room}} vom {{created_at}}.",
     "expiration": "Achtung, diese Aufzeichnung wird nach {{expiration_days}} Tag(en) gelöscht.",
-    "button": "Herunterladen",
-    "warning": {
-      "title": "Linkfreigabe deaktiviert",
-      "body": "Die Freigabe der Aufzeichnung per Link ist noch nicht verfügbar. Nur Hosts können sie herunterladen."
+    "button": "Herunterladen"
+  },
+  "share": {
+    "description": "Gib einer Kollegin oder einem Kollegen Zugriff auf diese Aufzeichnung. Teile den Seitenlink, dann kann die Person ihn öffnen und herunterladen. Öffentliche Links sind nicht verfügbar.",
+    "emailPlaceholder": "E-Mail eines bestehenden Nutzers",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "error": {
+      "invite": "Diese Person konnte nicht hinzugefügt werden. Prüfe, ob die E-Mail zu einem bestehenden Nutzer gehört.",
+      "remove": "Diese Person konnte nicht entfernt werden. Versuche es erneut."
     }
   }
 }

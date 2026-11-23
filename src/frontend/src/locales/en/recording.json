@@ -1,7 +1,7 @@
 {
   "error": {
     "title": "Recording unavailable",
-    "body": "The recording is unavailable or may have been deleted. Only the meeting host can access it. Feel free to contact them if needed."
+    "body": "The recording is unavailable, may have been deleted, or has not been shared with you. Ask the meeting host to share access."
   },
   "expired": {
     "title": "Recording expired",
@@ -19,10 +19,16 @@
     "title": "Your recording is ready!",
     "body": "Recording of the meeting {{room}} from {{created_at}}.",
     "expiration": "Attention, this recording will expire after {{expiration_days}} day(s).",
-    "button": "Download",
-    "warning": {
-      "title": "Link sharing disabled",
-      "body": "Sharing the recording via link is not yet available. Only hosts can download it."
+    "button": "Download"
+  },
+  "share": {
+    "description": "Give a teammate access to this recording. Share the page link with them and they can open and download it. Public links are not available.",
+    "emailPlaceholder": "Email of an existing user",
+    "add": "Add",
+    "remove": "Remove",
+    "error": {
+      "invite": "Could not add this person. Check that the email belongs to an existing user.",
+      "remove": "Could not remove this person. Try again."
     }
   }
 }

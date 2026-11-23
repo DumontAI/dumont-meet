@@ -2,6 +2,17 @@ import { fetchApi } from '@/api/fetchApi'
 import type { ApiRoom } from '@/features/rooms/api/ApiRoom'
 import type { RecordingMode, RecordingStatus } from '@/features/recording'
 
+export type RecordingAccessApi = {
+  id: string
+  role: 'member' | 'administrator' | 'owner'
+  user: {
+    id: string
+    email: string | null
+    full_name: string | null
+    short_name: string | null
+  }
+}
+
 export type RecordingApi = {
   id: string
   room: Pick<ApiRoom, 'id' | 'name' | 'slug' | 'access_level'>
@@ -11,6 +22,7 @@ export type RecordingApi = {
   status: RecordingStatus
   is_expired: boolean
   expired_at: string
+  accesses?: RecordingAccessApi[]
 }
 
 export const fetchRecording = ({ recordingId }: { recordingId?: string }) => {

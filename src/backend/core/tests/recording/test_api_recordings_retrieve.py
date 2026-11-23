@@ -81,6 +81,10 @@ def test_api_recording_retrieve_administrators(settings):
     content = response.json()
     room = recording.room
 
+    assert [(a["user"]["id"], a["role"]) for a in content.pop("accesses")] == [
+        (str(user.id), "administrator")
+    ]
+
     assert content == {
         "id": str(recording.id),
         "key": recording.key,
@@ -116,6 +120,10 @@ def test_api_recording_retrieve_owners(settings):
     assert response.status_code == 200
     content = response.json()
     room = recording.room
+
+    assert [(a["user"]["id"], a["role"]) for a in content.pop("accesses")] == [
+        (str(user.id), "owner")
+    ]
 
     assert content == {
         "id": str(recording.id),
@@ -157,6 +165,8 @@ def test_api_recording_retrieve_compute_expiration_date_correctly(settings):
     content = response.json()
     room = recording.room
 
+    assert [a["user"]["id"] for a in content.pop("accesses")] == [str(user.id)]
+
     assert content == {
         "id": str(recording.id),
         "key": recording.key,
@@ -197,6 +207,8 @@ def test_api_recording_retrieve_expired(settings):
     assert response.status_code == 200
     content = response.json()
     room = recording.room
+
+    assert [a["user"]["id"] for a in content.pop("accesses")] == [str(user.id)]
 
     assert content == {
         "id": str(recording.id),

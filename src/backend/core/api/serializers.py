@@ -241,6 +241,62 @@ class RoomSerializer(serializers.ModelSerializer):
         return output
 
 
+class RecordingAccessUserSerializer(serializers.ModelSerializer):
+    """Expose enough of a user to identify who a recording is shared with."""
+
+    class Meta:
+        model = models.User
+        fields = ["id", "email", "full_name", "short_name"]
+        read_only_fields = fields
+
+
+class RecordingAccessSerializer(serializers.ModelSerializer):
+    """Serialize a recording access and accept invites by the invitee's email."""
+
+    user = RecordingAccessUserSerializer(read_only=True)
+    email = serializers.EmailField(write_only=True)
+
+    class Meta:
+        model = models.RecordingAccess
+        fields = ["id", "user", "email", "role"]
+        read_only_fields = ["id", "user"]
+
+    def validate_email(self, value):
+        try:
+            return models.User.objects.get(email__iexact=value)
+        except models.User.DoesNotExist:
+            raise serializers.ValidationError(
+                _("No existing user with this email.")
+            ) from None
+        except models.User.MultipleObjectsReturned:
+            raise serializers.ValidationError(
+                _("Several users share this email.")
+            ) from None
+
+    def validate_role(self, value):
+        if value == models.RoleChoices.OWNER:
+            raise serializers.ValidationError(
+                _("Only member or administrator roles can be granted here.")
+            )
+        return value
+
+    def validate(self, data):
+        recording = self.context["recording"]
+        if models.RecordingAccess.objects.filter(
+            recording=recording, user=data["email"]
+        ).exists():
+            raise serializers.ValidationError(
+                {"email": _("This user already has access to the recording.")}
+            )
+        return data
+
+    def create(self, validated_data):
+        user = validated_data.pop("email")
+        return models.RecordingAccess.objects.create(
+            recording=self.context["recording"], user=user, **validated_data
+        )
+
+
 class RecordingSerializer(serializers.ModelSerializer):
     """Serialize Recording for the API."""
 
@@ -261,6 +317,22 @@ class RecordingSerializer(serializers.ModelSerializer):
             "expired_at",
         ]
         read_only_fields = fields
+
+    def to_representation(self, instance):
+        """Add the access list for owners and administrators on the detail view."""
+        output = super().to_representation(instance)
+        request = self.context.get("request")
+        view = self.context.get("view")
+        if (
+            request
+            and getattr(view, "action", None) == "retrieve"
+            and instance.get_abilities(request.user).get("accesses")
+        ):
+            accesses = instance.accesses.filter(user__isnull=False).select_related(
+                "user"
+            )
+            output["accesses"] = RecordingAccessSerializer(accesses, many=True).data
+        return output
 
 
 class BaseValidationOnlySerializer(serializers.Serializer):

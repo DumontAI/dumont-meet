@@ -1,7 +1,7 @@
 {
   "error": {
     "title": "Opname niet beschikbaar",
-    "body": "De opname is niet beschikbaar of is mogelijk verwijderd. Alleen de host van de vergadering heeft toegang. Neem gerust contact met hem of haar op als dat nodig is."
+    "body": "De opname is niet beschikbaar, is mogelijk verwijderd, of is niet met je gedeeld. Vraag de host van de vergadering om toegang."
   },
   "expired": {
     "title": "Opname verlopen",
@@ -19,10 +19,16 @@
     "title": "Je opname is klaar!",
     "body": "Opname van de vergadering {{room}} op {{created_at}}.",
     "expiration": "Let op, deze opname verloopt na {{expiration_days}} dag(en).",
-    "button": "Downloaden",
-    "warning": {
-      "title": "Delen via link uitgeschakeld",
-      "body": "Het delen van de opname via een link is nog niet beschikbaar. Alleen hosts kunnen deze downloaden."
+    "button": "Downloaden"
+  },
+  "share": {
+    "description": "Geef een collega toegang tot deze opname. Deel de paginalink, dan kan diegene hem openen en downloaden. Openbare links zijn niet beschikbaar.",
+    "emailPlaceholder": "E-mail van een bestaande gebruiker",
+    "add": "Toevoegen",
+    "remove": "Verwijderen",
+    "error": {
+      "invite": "Deze persoon kon niet worden toegevoegd. Controleer of het e-mailadres bij een bestaande gebruiker hoort.",
+      "remove": "Deze persoon kon niet worden verwijderd. Probeer het opnieuw."
     }
   }
 }

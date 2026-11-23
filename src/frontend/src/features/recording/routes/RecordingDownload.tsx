@@ -15,31 +15,10 @@ import { ErrorScreen } from '@/components/ErrorScreen'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { fetchRecording } from '../api/fetchRecording'
 import { RecordingStatus } from '@/features/recording'
+import { RecordingShare } from '../components/RecordingShare'
 import { useConfig } from '@/api/useConfig'
 
 const APP_TITLE = import.meta.env.VITE_APP_TITLE ?? ''
-
-const BetaBadge = () => (
-  <span
-    className={css({
-      content: '"Beta"',
-      display: 'block',
-      letterSpacing: '-0.02rem',
-      padding: '0 0.25rem',
-      backgroundColor: 'primary.100',
-      color: '#0063CB',
-      fontSize: '14px',
-      fontWeight: 500,
-      margin: '0 0.3125rem',
-      lineHeight: '1rem',
-      borderRadius: '4px',
-      width: 'fit-content',
-      height: 'fit-content',
-    })}
-  >
-    Beta
-  </span>
-)
 
 const RecordingDownload = () => {
   const { t } = useTranslation('recording')
@@ -152,28 +131,12 @@ const RecordingDownload = () => {
             >
               {t('success.button')}
             </LinkButton>
-            <div
-              className={css({
-                backgroundColor: 'greyscale.50',
-                borderRadius: '5px',
-                paddingY: '1rem',
-                paddingX: '1rem',
-                maxWidth: '80%',
-                marginTop: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-              })}
-            >
-              <Text
-                className={css({
-                  display: 'flex',
-                  alignItems: 'center',
-                })}
-              >
-                {t('success.warning.title')} <BetaBadge />
-              </Text>
-              <Text variant="smNote">{t('success.warning.body')}</Text>
-            </div>
+            {recordingId && data.accesses && (
+              <RecordingShare
+                recordingId={recordingId}
+                accesses={data.accesses}
+              />
+            )}
           </VStack>
         </Center>
       </Screen>

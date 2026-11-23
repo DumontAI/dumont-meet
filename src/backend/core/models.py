@@ -751,6 +751,7 @@ class Recording(BaseModel):
         is_final_status = RecordingStatusChoices.is_final(self.status)
 
         return {
+            "accesses": is_owner_or_admin,
             "destroy": is_owner_or_admin and is_final_status,
             "partial_update": False,
             "retrieve": bool(roles),
