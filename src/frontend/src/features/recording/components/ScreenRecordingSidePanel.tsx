@@ -46,13 +46,19 @@ import { captureEvent, reportError } from '@/features/analytics/telemetry'
 const recordingTranscriptEnabled =
   import.meta.env.VITE_APP_RECORDING_TRANSCRIPT !== 'false'
 
+// Transcript starts with the screen recording by default; the checkbox stays
+// as an opt-out for hosts who record without one.
+const DEFAULT_INCLUDE_TRANSCRIPT = true
+
 export const ScreenRecordingSidePanel = () => {
   const { data } = useConfig()
 
   const keyPrefix = 'screenRecording'
   const { t } = useTranslation('rooms', { keyPrefix })
 
-  const [includeTranscript, setIncludeTranscript] = useState(false)
+  const [includeTranscript, setIncludeTranscript] = useState(
+    DEFAULT_INCLUDE_TRANSCRIPT
+  )
 
   const isAdminOrOwner = useIsAdminOrOwner()
   const canRecord = useCanRecord()
@@ -97,7 +103,7 @@ export const ScreenRecordingSidePanel = () => {
     }
     try {
       if (statuses.isStarted || statuses.isStarting) {
-        setIncludeTranscript(false)
+        setIncludeTranscript(DEFAULT_INCLUDE_TRANSCRIPT)
         await stopRecording({ id: roomId })
 
         await notifyParticipants({

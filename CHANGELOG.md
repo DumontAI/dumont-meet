@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Changed
 
+- ✨(frontend) start the transcript with a screen recording by default
 - 🔧(frontend) use a full-size Open Graph image for link previews
 - ✨(frontend) give rooms a readable name and keep their link on rename
 
