@@ -82,6 +82,7 @@ def test_models_recording_get_abilities_privileges_active(role):
     abilities = access.recording.get_abilities(user)
 
     assert abilities == {
+        "accesses": True,
         "destroy": False,  # Not final status
         "partial_update": False,
         "retrieve": True,  # Privileged users can always retrieve
@@ -99,6 +100,7 @@ def test_models_recording_get_abilities_member_active():
     abilities = access.recording.get_abilities(user)
 
     assert abilities == {
+        "accesses": False,
         "destroy": False,
         "partial_update": False,
         "retrieve": True,
@@ -120,6 +122,7 @@ def test_models_recording_get_abilities_privileges_final(role):
     abilities = access.recording.get_abilities(user)
 
     assert abilities == {
+        "accesses": True,
         "destroy": True,
         "partial_update": False,
         "retrieve": True,  # Privileged users can always retrieve
@@ -137,6 +140,7 @@ def test_models_recording_get_abilities_member_final():
     abilities = access.recording.get_abilities(user)
 
     assert abilities == {
+        "accesses": False,
         "destroy": False,
         "partial_update": False,
         "retrieve": True,

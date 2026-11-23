@@ -1310,6 +1310,52 @@ class RecordingViewSet(
 
         return drf_response.Response("authorized", headers=request.headers, status=200)
 
+    @decorators.action(
+        detail=True,
+        methods=["get", "post", "delete"],
+        url_path="accesses",
+    )
+    def accesses(self, request, pk=None):  # pylint: disable=unused-argument
+        """List, add, or remove per-user access to a recording.
+
+        Only owners and administrators of the recording may use this action.
+        """
+        recording = self.get_object()
+
+        if request.method == "GET":
+            accesses = recording.accesses.filter(user__isnull=False).select_related(
+                "user"
+            )
+            return drf_response.Response(
+                serializers.RecordingAccessSerializer(accesses, many=True).data
+            )
+
+        if request.method == "POST":
+            serializer = serializers.RecordingAccessSerializer(
+                data=request.data,
+                context={"request": request, "recording": recording},
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return drf_response.Response(serializer.data, status=201)
+
+        access_id = request.query_params.get("access_id")
+        try:
+            access = recording.accesses.filter(user__isnull=False).get(pk=access_id)
+        except (models.RecordingAccess.DoesNotExist, DjangoValidationError):
+            raise drf_exceptions.NotFound("No such access.") from None
+
+        if (
+            access.role == models.RoleChoices.OWNER
+            and recording.accesses.filter(role=models.RoleChoices.OWNER).count() <= 1
+        ):
+            raise drf_exceptions.ValidationError(
+                {"access_id": _("A recording must keep at least one owner.")}
+            )
+
+        access.delete()
+        return drf_response.Response(status=204)
+
 
 # pylint: disable=too-many-public-methods
 class FileViewSet(
